@@ -41,31 +41,31 @@ export class Block
   random: ->
     return Block(Block.standardBlocks[math.ceil(math.random() * #Block.standardBlocks)])
 
-  rotations: ->
+  rotations: =>
     if @rotatedShapes
       return @rotatedShapes
     else
-      @rotatedShapes = { @, @\rotate() }
-      @rotatedShapes[3] = @rotatedShapes[2]\rotate()
-      @rotatedShapes[4] = @rotatedShapes[3]\rotate()
+      @rotatedShapes = { @, @rotate(@shape) }
+      @rotatedShapes[3] = @rotate(@rotatedShapes[2])
+      @rotatedShapes[4] = @rotate(@rotatedShapes[3])
+    return @rotatedShapes
 
   -- returns a rotated version
-  rotate: =>
+  rotate: (shape) ->
     new_shape = {}
-    for y=1, #@shape
-      for x=1, #@shape[y]
+    for y=1, #shape
+      for x=1, #shape[y]
         if not new_shape[x]
           new_shape[x] = {}
-        new_shape[x][y] = @shape[y][x]
+        new_shape[x][y] = shape[y][x]
     return new_shape
 
   normalize: =>
     -- find area of interest
     min_x, min_y = nil, nil
     max_x, max_y = nil, nil
-    for x, row in @shape
-      for y, block in row
-        print(x,y)
+    for x, row in pairs(@shape)
+      for y, block in pairs(row)
         if block
           if not min_x or x < min_x
             min_x = x
@@ -78,14 +78,16 @@ export class Block
 
 
     new_shape = {}
-    for y=1, max_y - min_y
-      for x=1, max_x - min_x
-        new_shape[y][x] = @shape[min_y + y - 1][max_y + y - 1]
+    for y=1, max_y - min_y + 1
+      new_shape[y] = {}
+      if @shape[min_y + y - 1]
+        for x=1, max_x - min_x + 1
+          new_shape[y][x] = @shape[min_y + y - 1][min_x + x - 1]
     return new_shape
 
   isLike: (other_block) =>
     normalized_shape = @\normalize()
-    for i, rotated_shape in ipairs(other_shape\rotations())
+    for i, rotated_shape in ipairs(other_block\rotations())
       for y=1, #normalized_shape
         for x=1, #normalized_shape[y]
           if normalized_shape[y][x] and rotated_shape[y] and rotated_shape[y][x]
@@ -130,7 +132,6 @@ export class Field extends Block
     --       wanted block it needs to be normalized first
     game.gestureBlock\set(block_x, block_y, block)
 
-    if  event.phase == 'ended'
-      if game.targetBlock\isLike(game.gestureBlock) then
-        game.field\substract(match)
+    if game.gestureBlock\isLike(game.targetBlock) then
+      game.field\substract(match)
 

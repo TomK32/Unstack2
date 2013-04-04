@@ -26,7 +26,6 @@ scene.createScene = (event) =>
   -- setup playing field
   game.field = Field.random(group, game.level, width, height)
   group\addEventListener( "touch", Field.gestureShape )
-  group.touch = Field.gestureShape
 
   -- first block we need to mark
   game.targetBlock = Block.random()
