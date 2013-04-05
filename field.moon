@@ -78,7 +78,6 @@ export class Block
           if not max_y or y > max_y
             max_y = y
 
-
     new_shape = {}
     for y=1, max_y - min_y + 1
       new_shape[y] = {}
@@ -140,16 +139,19 @@ export class Field extends Block
           shape[y][x]\setFillColor(unpack(color))
           transition.from(shape[y][x], {time: 2000 / (x+2), alpha: 0, y: 0, x: 0})
 
-    return Field(shape)
+    field = Field(shape)
+    field.group = group
+    return field
 
   @gestureShape: (event) ->
     if event.phase == 'began'
       game.gestureShapePoints = {} -- takes {x, y} pixel coords
-      game.gestureBlock = Field({}) -- the block we draw
-    table.insert(game.gestureShapePoints, {event.x, event.y})
-
-    block_x = math.ceil(event.x / game.block_size)
-    block_y = math.ceil(event.y / game.block_size)
+      game.gestureBlock = Block({}) -- the block we draw
+    --table.insert(game.gestureShapePoints, {event.x, event.y})
+    x = event.x - game.field.group.x
+    y = event.y - game.field.group.y
+    block_x = math.ceil(x / game.block_size)
+    block_y = math.ceil(y / game.block_size)
     block = game.field\get(block_x, block_y)
     if not block or game.gestureBlock\get(block_x, block_y)
       -- nothing to do
