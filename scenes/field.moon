@@ -46,6 +46,21 @@ gestureShape = (event) ->
   return true
 
 
+updateTimerDisplay = (event) ->
+  t = event.time / game.time_remaining
+  timer_color = nil
+  game.timer_display.text = math.floor((game.time_remaining - event.time) / 500)
+  if t < 0.5
+    timer_color = {255, 255, 255, 255}
+  else
+    timer_color = {255, 150 * (2-2*t),  0,255}
+  game.timer_display\setTextColor(unpack(timer_color))
+
+gameLoop = (event) ->
+  if game.time_remaining < event.time
+    storyboard.gotoScene('scenes.finished')
+    return
+  updateTimerDisplay(event)
 
 
 -- Called when the scene's view does not exist:
@@ -71,6 +86,10 @@ scene.createScene = (event) =>
   game.target_group.x = game.block_size / 2
   createTarget()
 
+  game.timer_display = display.newText(' ', game.block_size * 5, game.block_size / 2, native.systemFontBold, game.block_size)
+
+  game.time_remaining = 1000 * 6
+  timer.performWithDelay 1, => Runtime\addEventListener("enterFrame", gameLoop)
   @view
 --Runtime\addEventListener( "touch", gestureShape )
 scene\addEventListener( "createScene", scene )
