@@ -96,6 +96,32 @@ export class Block
             return true
     return false
 
+  height: =>
+    h = 0
+    for y, row in pairs(@shape)
+      print('h', y)
+      if y and y > h
+        h = y
+    return h
+
+  width: =>
+    w = 0
+    for y, row in pairs(@shape)
+      for x, b in pairs(row)
+        if x and x > w
+          w = x
+    return w
+
+  toString: () =>
+    str = "\n" .. @\height() .. 'x' .. @\width() .. "\n"
+    for y=1, @\height()
+      for x=1, @\width()
+        if @shape[y] and @shape[y][x]
+          str = str .. '1'
+        else
+          str = str .. '.'
+      str = str .. "\n"
+    return str
 
 export class Field extends Block
   random: (group, level, height, width) ->
