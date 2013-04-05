@@ -96,19 +96,37 @@ export class Block
           new_shape[y][x] = @shape[min_y + y - 1][min_x + x - 1] or false
     return new_shape
 
+  matchShapes: (s1,s2) ->
+    -- Use usual comparison first.
+    if s1 == nil or s2 == nil
+      return false
+    for y, row in pairs(s1) do
+      if not s2[y]
+        return false
+      for x, b in pairs(row) do
+        if b != s2[y][x]
+          return false
+    for y, row in pairs(s2) do
+      if not s1[y]
+        return false
+      for x, b in pairs(row) do
+        if b != s1[y][x]
+          return false
+    return true
+
+
   isLike: (other_block) =>
     normalized_shape = @\normalize()
+    if next(normalized_shape) == nil -- We haven't draw anything yet
+      return false
     for i, rotated_shape in ipairs(other_block\rotations())
-      for y=1, #normalized_shape
-        for x=1, #normalized_shape[y]
-          if normalized_shape[y][x] and rotated_shape[y] and rotated_shape[y][x]
-            return true
+      if @.matchShapes(normalized_shape, rotated_shape)
+        return true
     return false
 
   height: =>
     h = 0
     for y, row in pairs(@shape)
-      print('h', y)
       if y and y > h
         h = y
     return h
