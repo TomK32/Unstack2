@@ -102,13 +102,13 @@ export class Block
       if not s2[y]
         return false
       for x, b in pairs(row) do
-        if b != s2[y][x]
+        if not (b and s2[y][x]) and not (not b and not s2[y][x])
           return false
     for y, row in pairs(s2) do
       if not s1[y]
         return false
       for x, b in pairs(row) do
-        if b != s1[y][x]
+        if not (b and s1[y][x]) and not (not b and not s1[y][x])
           return false
     return true
 
@@ -149,6 +149,24 @@ export class Block
     return str
 
 export class Field extends Block
+
+  new: (shape, group, level) =>
+    @group = group
+    @level = level
+    @shape = shape
+    @createRects()
+    return @
+
+  createRects: =>
+    for y, row in pairs(@shape)
+      for x, block in pairs(row)
+        if block == 1
+          color = Field.colors[math.ceil(#Field.colors * math.random())]
+          @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
+          @shape[y][x]\setFillColor(unpack(color))
+          transition.from(@shape[y][x], {time: 2000 / (x+2), alpha: 0, y: 0, x: 0})
+          @group\insert(@shape[y][x])
+
   random: (group, level, height, width) ->
     empty_tiles = math.min(math.max(level - 1, math.floor(level/(height + width))), (width + height) / 2)
     shape = {}
@@ -159,35 +177,9 @@ export class Field extends Block
         if empty_tiles > 0 and math.random() < 1/math.sqrt(x+x*y+level+empty_tiles+1)
           empty_tiles -= 1
         else
-          color = Field.colors[math.ceil(#Field.colors * math.random())]
-          shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
-          group\insert(shape[y][x])
-          shape[y][x]\setFillColor(unpack(color))
-          transition.from(shape[y][x], {time: 2000 / (x+2), alpha: 0, y: 0, x: 0})
+          shape[y][x] = 1
 
-    field = Field(shape)
-    field.group = group
-    return field
+    return Field(shape, group, level)
 
-  @gestureShape: (event) ->
-    if event.phase == 'began'
-      game.gestureShapePoints = {} -- takes {x, y} pixel coords
-      game.gestureBlock = Block({}) -- the block we draw
-    --table.insert(game.gestureShapePoints, {event.x, event.y})
-    x = event.x - game.field.group.x
-    y = event.y - game.field.group.y
-    block_x = math.ceil(x / game.block_size)
-    block_y = math.ceil(y / game.block_size)
-    block = game.field\get(block_x, block_y)
-    if not block or game.gestureBlock\get(block_x, block_y)
-      -- nothing to do
-      return false
-
-    -- add to the shape we draw
-    -- NOTE: this shape fits into the Field, for comparing with the
-    --       wanted block it needs to be normalized first
-    game.gestureBlock\set(block_x, block_y, block)
-
-    if game.gestureBlock\isLike(game.targetBlock) then
-      game.field\substract(match)
+  substract: (block) =>
 
