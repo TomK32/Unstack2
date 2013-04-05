@@ -11,7 +11,8 @@ export class Block
     {{1,1,1}, {false,false,1}}, -- inverse L
     {{false, 1,1}, {1, 1, false}}, -- z
     {{1,1, false}, {false, 1, 1}}, -- inverse z
-    {{1,1,1, 1}}, -- long john
+    {{1,1,1}}, -- long john
+    {{1,1,1},{1,false,1}, {1,1,1}}, -- circle
     {{1,1}, {1,1}} -- massiveblock
   }
 
@@ -170,7 +171,9 @@ export class Field extends Block
           color = Field.colors[math.ceil(#Field.colors * math.random())]
           @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
           @shape[y][x]\setFillColor(unpack(color))
-          transition.from(@shape[y][x], {time: 2000 / (x+2), alpha: 0, y: 0, x: 0})
+          trans_x = math.random() * (x+2) * game.block_size
+          trans_y = math.random() * (y+2) * game.block_size
+          transition.from(@shape[y][x], {time: 500, alpha: 0, y: trans_y, x: trans_x})
           @group\insert(@shape[y][x])
 
   random: (group, level, height, width) ->
