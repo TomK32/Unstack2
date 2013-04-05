@@ -7,14 +7,14 @@ export class Block
   }
 
   standardBlocks: {
-    {{1,1,1}, {nil,1,nil}}, -- T
-    {{1,1,1}, {1,nil,nil}}, -- L
-    {{1,1,1}, {nil,nil,1}}, -- inverse L
-    {{nil, 1,1}, {1, 1, nil}}, -- z
-    {{1,1, nil}, {nil, 1, 1}}, -- inverse z
+    {{1,1,1}, {0,1}}, -- T
+    {{1,1,1}, {1}}, -- L
+    {{1,1,1}, {false,false,1}}, -- inverse L
+    {{false, 1,1}, {1, 1, false}}, -- z
+    {{1,1, false}, {false, 1, 1}}, -- inverse z
     {{1,1,1, 1}}, -- long john
     {{1,1}, {1,1}}, -- massiveblock
-    {{1,1,1}, {nil,1,nil}}, -- make the T more often than others
+    {{1,1,1}, {false,1,false}}, -- make the T more often than others
   }
 
   new: (shape) =>
@@ -46,21 +46,31 @@ export class Block
   rotations: =>
     if @rotatedShapes
       return @rotatedShapes
-    else
-      @rotatedShapes = { @, @rotate(@shape) }
-      @rotatedShapes[3] = @rotate(@rotatedShapes[2])
-      @rotatedShapes[4] = @rotate(@rotatedShapes[3])
+
+    @rotatedShapes = { @shape }
+    @rotatedShapes[2] = @.rotate(@rotatedShapes[1])
+    @rotatedShapes[3] = @.rotate(@rotatedShapes[2])
+    @rotatedShapes[4] = @.rotate(@rotatedShapes[3])
     return @rotatedShapes
 
   -- returns a rotated version
   rotate: (shape) ->
-    new_shape = {}
+    rotated = {}
+    w = 0
+    h = 0
     for y, row in pairs(shape)
-      for x, block in pairs(shape[y])
-        if not new_shape[x]
-          new_shape[x] = {}
-        new_shape[x][y] = block
-    return new_shape
+      if y > h
+        h = y
+      for x in pairs(row)
+        if x > w
+          w = x
+    for y=1, h do
+      for x=1, w do
+        if not rotated[w - x + 1]
+          rotated[w - x + 1] = {}
+        if shape[y]
+          rotated[w - x + 1][y] = shape[y][x]
+    return rotated
 
   normalize: =>
     -- find area of interest
@@ -83,7 +93,7 @@ export class Block
       new_shape[y] = {}
       if @shape[min_y + y - 1]
         for x=1, max_x - min_x + 1
-          new_shape[y][x] = @shape[min_y + y - 1][min_x + x - 1]
+          new_shape[y][x] = @shape[min_y + y - 1][min_x + x - 1] or false
     return new_shape
 
   isLike: (other_block) =>
