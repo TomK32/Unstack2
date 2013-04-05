@@ -52,9 +52,9 @@ gestureShape = (event) ->
 scene.createScene = (event) =>
   -- view size will take full width but leave a few block on the top
   group = display.newGroup()
-  group.y = 3 * game.block_size
+  group.y = 4 * game.block_size
   width = math.floor(display.contentWidth / game.block_size)
-  height = math.floor(display.contentHeight / game.block_size) - 3
+  height = math.floor(display.contentHeight / game.block_size) - 4
 
   background = display.newRect(0, 0, width * game.block_size, height * game.block_size)
   background\setFillColor(30,30,30,255)
@@ -67,7 +67,8 @@ scene.createScene = (event) =>
   game.field.target = target_group
 
   game.target_group = display.newGroup()
-  game.target_group.y = 0
+  game.target_group.y = game.block_size / 2
+  game.target_group.x = game.block_size / 2
   createTarget()
 
   @view
