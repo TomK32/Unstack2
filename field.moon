@@ -7,14 +7,12 @@ export class Block
   }
 
   standardBlocks: {
-    {{1,1,1}, {0,1}}, -- T
     {{1,1,1}, {1}}, -- L
     {{1,1,1}, {false,false,1}}, -- inverse L
     {{false, 1,1}, {1, 1, false}}, -- z
     {{1,1, false}, {false, 1, 1}}, -- inverse z
     {{1,1,1, 1}}, -- long john
-    {{1,1}, {1,1}}, -- massiveblock
-    {{1,1,1}, {false,1,false}}, -- make the T more often than others
+    {{1,1}, {1,1}} -- massiveblock
   }
 
   new: (shape) =>
