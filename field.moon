@@ -27,6 +27,8 @@ export class Block
     return @shape[y][x]
 
   set: (x, y, block) =>
+    if not @shape
+      @shape = {}
     if not @shape[y]
       @shape[y] = {}
     @shape[y][x] = block
@@ -53,19 +55,19 @@ export class Block
   -- returns a rotated version
   rotate: (shape) ->
     new_shape = {}
-    for y=1, #shape
-      for x=1, #shape[y]
+    for y, row in pairs(shape)
+      for x, block in pairs(shape[y])
         if not new_shape[x]
           new_shape[x] = {}
-        new_shape[x][y] = shape[y][x]
+        new_shape[x][y] = block
     return new_shape
 
   normalize: =>
     -- find area of interest
     min_x, min_y = nil, nil
     max_x, max_y = nil, nil
-    for x, row in pairs(@shape)
-      for y, block in pairs(row)
+    for y, row in pairs(@shape)
+      for x, block in pairs(row)
         if block
           if not min_x or x < min_x
             min_x = x
