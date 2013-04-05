@@ -40,7 +40,12 @@ export class Block
      game.block_size - 2}
 
   random: ->
-    return Block(Block.standardBlocks[math.ceil(math.random() * #Block.standardBlocks)])
+    shape = {}
+    for y, row in pairs(Block.standardBlocks[math.ceil(math.random() * #Block.standardBlocks)])
+      shape[y] = {}
+      for x, block in pairs(row)
+        shape[y][x] = block
+    return Block(shape)
 
   rotations: =>
     if @rotatedShapes
