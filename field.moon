@@ -157,6 +157,12 @@ export class Field extends Block
     @createRects()
     return @
 
+  removeSelf: =>
+    for y, row in pairs(@shape)
+      for x, block in pairs(row)
+        if type(block) == 'table' and block.removeSelf
+          block\removeSelf()
+
   createRects: =>
     for y, row in pairs(@shape)
       for x, block in pairs(row)

@@ -41,6 +41,7 @@ gestureShape = (event) ->
 
   if game.gestureBlock\isLike(game.targetBlock) then
     game.field\substract(match)
+    game.targetBlock\removeSelf()
     createTarget()
   return true
 
