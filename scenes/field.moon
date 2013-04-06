@@ -40,7 +40,7 @@ gestureShape = (event) ->
   --       wanted block it needs to be normalized first
 
   if game.gestureBlock\isLike(game.targetBlock) then
-    game.field\substract(match)
+    game.field\substract(game.gestureBlock)
     game.targetBlock\removeSelf()
     game.score += 20 - (event.time - game.last_target_time)/1000
     game.time_remaining += math.ceil(event.time - game.last_target_time)/5000

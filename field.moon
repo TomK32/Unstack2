@@ -202,4 +202,11 @@ export class Field extends Block
     return Field(shape, group, level)
 
   substract: (block) =>
-
+    field = @
+    for y, row in pairs(block.shape)
+      for x, b in pairs(row)
+        if @shape[y] and @shape[y][x]
+          transition.to(@shape[y][x], {time: 1000, alpha: 0})
+          timer.performWithDelay 1000, ->
+            field\get(x, y)\removeSelf()
+            field\set(x, y, nil)
