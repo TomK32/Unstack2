@@ -206,6 +206,13 @@ export class Field extends Block
 
     return Field(shape, group, level)
 
+  blocksLeft: () =>
+    blocks_left = 0
+    for y, row in pairs(@shape)
+      for x, b in pairs(row)
+        if b ~= nil and b ~= false
+          blocks_left += 1
+    return blocks_left
   substract: (block) =>
     field = @
     for y, row in pairs(block.shape)

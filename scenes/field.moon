@@ -74,13 +74,17 @@ updateScoreDisplay = (event) ->
     game.running_score += 3
   elseif game.running_score + 1 <= game.score
     game.running_score += 1
-  game.score_display.text = game.running_score
+  elseif game.running_score > game.score
+    game.running_score = (game.score + game.running_score) / 2
+  game.score_display.text = math.floor(game.running_score)
   leftAlignText(game.score_display, game.block_size * 4)
 
 gameLoop = (event) ->
   if not game.time_remaining
     game.time_remaining = event.time + game.time_for_level
   if game.time_remaining < event.time
+    game.score -= math.sqrt(game.field\blocksLeft())
+    game.score += game.level
     Runtime\removeEventListener("enterFrame", gameLoop)
     game.reset()
     game.level += 1
