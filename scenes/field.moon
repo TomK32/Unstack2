@@ -12,6 +12,12 @@ scene = storyboard.newScene('Field')
 widget = require "widget"
 
 
+rightAlignText = (text, x) ->
+  text.x = x - text.width / 2 - game.block_size * 0.2
+
+leftAlignText = (text, x) ->
+  text.x = x + text.width / 2 + game.block_size * 0.2
+
 createTarget = () ->
   -- the block we need to mark
   game.targetBlock = Field(Block.random().shape, game.target_group)
@@ -58,8 +64,8 @@ updateTimerDisplay = (event) ->
   else
     timer_color = {255, 150 * (2-2*t),  0,255}
   game.timer_display\setTextColor(unpack(timer_color))
-  game.timer_display.x = display.contentWidth - game.block_size - game.timer_display.width
 
+  leftAlignText(game.timer_display, game.block_size * 4)
 
 updateScoreDisplay = (event) ->
 
@@ -68,10 +74,12 @@ updateScoreDisplay = (event) ->
   elseif game.running_score + 1 <= game.score
     game.running_score += 1
   game.score_display.text = game.running_score
+  leftAlignText(game.score_display, game.block_size * 4)
 
 gameLoop = (event) ->
   if game.time_remaining < event.time
-    storyboard.gotoScene('scenes.finished')
+    game.level += 1
+    storyboard.gotoScene('scenes.field')
     return
   updateScoreDisplay(event)
   updateTimerDisplay(event)
@@ -101,13 +109,14 @@ scene.createScene = (event) =>
   createTarget()
 
   game.level_display = display.newText('lvl ' .. game.level, 0, game.block_size * 2, native.systemFontBold, game.block_size)
-  game.level_display.x = display.contentWidth - game.level_display.width
+  rightAlignText(game.level_display, display.contentWidth)
 
-  game.timer_display = display.newText(' ', 0, game.block_size, native.systemFontBold, game.block_size)
+
+  game.timer_display = display.newText(' ', 0, game.block_size * 2, native.systemFontBold, game.block_size)
 
   game.time_remaining = 1000 * 60
 
-  game.score_display = display.newText(game.score, game.block_size * 4, game.block_size, native.systemFontBold, game.block_size)
+  game.score_display = display.newText(game.score, 0, game.block_size, native.systemFontBold, game.block_size)
 
 
   timer.performWithDelay 1, => Runtime\addEventListener("enterFrame", gameLoop)
