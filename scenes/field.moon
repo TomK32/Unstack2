@@ -81,7 +81,7 @@ updateScoreDisplay = (event) ->
 
 gameLoop = (event) ->
   if not game.time_remaining
-    game.time_remaining = event.time + game.time_for_level
+    game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 30000
   if game.time_remaining < event.time
     game.score -= math.sqrt(game.field\blocksLeft())
     game.score += game.level
