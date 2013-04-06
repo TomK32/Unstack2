@@ -213,5 +213,7 @@ export class Field extends Block
         if @shape[y] and @shape[y][x]
           transition.to(@shape[y][x], {time: 1000, alpha: 0})
           timer.performWithDelay 1000, ->
-            field\get(x, y)\removeSelf()
+            b = field\get(x,y)
+            if b and b.removeSelf
+              b\removeSelf()
             field\set(x, y, nil)
