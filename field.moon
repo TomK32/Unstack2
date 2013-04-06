@@ -13,7 +13,9 @@ export class Block
     {{1,1, false}, {false, 1, 1}}, -- inverse z
     {{1,1,1}}, -- long john
     {{1,1,1},{1,false,1}, {1,1,1}}, -- circle
-    {{1,1}, {1,1}} -- massiveblock
+    {{1,1}, {1,1}}, -- massive block
+    {{1,1}, {false, 1}},
+    {{1,1}, {1, false}}
   }
 
   new: (shape) =>
@@ -39,9 +41,13 @@ export class Block
      game.block_size - 2,
      game.block_size - 2}
 
+  randomStandardShape: ->
+    shape = Block.standardBlocks[math.ceil(math.random() * #Block.standardBlocks)]
+    return Block(shape)\rotations()[math.ceil(math.random() * 4)]
+
   random: ->
     shape = {}
-    for y, row in pairs(Block.standardBlocks[math.ceil(math.random() * #Block.standardBlocks)])
+    for y, row in pairs(Block.randomStandardShape())
       shape[y] = {}
       for x, block in pairs(row)
         shape[y][x] = block
