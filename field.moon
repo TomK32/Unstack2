@@ -187,8 +187,8 @@ export class Field extends Block
           color = @colors[math.ceil(#@colors * math.random())]
           @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
           @shape[y][x]\setFillColor(color)
-          trans_x = math.random() * (x+2) * game.block_size
-          trans_y = math.random() * (y+2) * game.block_size
+          trans_x = math.random() * x * 2 * game.block_size
+          trans_y = math.random() * y * 2 * game.block_size
           transition.from(@shape[y][x], {time: 500, alpha: 0, y: trans_y, x: trans_x})
           @group\insert(@shape[y][x])
 
