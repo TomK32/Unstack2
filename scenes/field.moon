@@ -26,7 +26,6 @@ createTarget = () ->
 
 
 gestureShape = (event) ->
-  game.last_movement = event.time
   if event.phase == 'began'
     game.gestureShapePoints = {} -- takes {x, y} pixel coords
     game.gestureBlock = Block({}) -- the block we draw
@@ -69,7 +68,6 @@ updateTimerDisplay = (event) ->
   leftAlignText(game.timer_display, game.block_size * 4)
 
 updateScoreDisplay = (event) ->
-
   if game.running_score + 3 <= game.score
     game.running_score += 3
   elseif game.running_score + 1 <= game.score
@@ -101,9 +99,6 @@ scene.createScene = (event) =>
   @field_group = group
   @view\insert(group)
   group.y = 4 * game.block_size
-  game.width = math.floor(display.contentWidth / game.block_size)
-  game.height = math.floor(display.contentHeight / game.block_size) - 4
-
   background = display.newRect(0, 0, game.width * game.block_size, game.height * game.block_size)
   background\setFillColor(30,30,30,255)
   group\insert(background)
@@ -133,18 +128,18 @@ scene.createScene = (event) =>
   @view
 
 scene.enterScene = (event) =>
-  timer.performWithDelay 1, => Runtime\addEventListener("enterFrame", gameLoop)
+  game.reset()
   game.level_display.text = 'lvl ' ..game.level
 
-  if game.field
-    game.field\removeSelf()
   game.field = Field.random(@field_group, game.level, game.width, game.height)
   game.field.target = game.target_group
 
   createTarget()
-  game.reset()
+  timer.performWithDelay 1, => Runtime\addEventListener("enterFrame", gameLoop)
 
 scene.exitScene = () =>
+  if game.field
+    game.field\removeSelf()
   --storyboard.purgeScene()
 
 
