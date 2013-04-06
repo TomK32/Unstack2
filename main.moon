@@ -9,6 +9,7 @@ export game = {
   level: 1,
   score: 0,
   running_score: 0, -- to increase the score with some easing
+  time_for_level: 1000 * 10
 
   gestureBlock: Block({})
   targetBlock: nil,
@@ -19,8 +20,8 @@ export game = {
 
 display.setStatusBar( display.HiddenStatusBar )
 
-storyboard = require "storyboard"
-
-storyboard.gotoScene("scenes.menu")
+export storyboard = require "storyboard"
+storyboard.purgeOnSceneChange = true
+storyboard.gotoScene("scenes.intro")
 
 

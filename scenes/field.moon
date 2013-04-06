@@ -7,7 +7,6 @@
 --
 -----------------------------------------------------------------------------------------
 
-storyboard = require( "storyboard" )
 scene = storyboard.newScene('Field')
 widget = require "widget"
 
@@ -114,7 +113,7 @@ scene.createScene = (event) =>
 
   game.timer_display = display.newText(' ', 0, game.block_size * 2, native.systemFontBold, game.block_size)
 
-  game.time_remaining = 1000 * 60
+  game.time_remaining = game.time_for_level
 
   game.score_display = display.newText(game.score, 0, game.block_size, native.systemFontBold, game.block_size)
 

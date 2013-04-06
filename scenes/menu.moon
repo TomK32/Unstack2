@@ -7,7 +7,6 @@
 --
 -----------------------------------------------------------------------------------------
 
-storyboard = require( "storyboard" )
 scene = storyboard.newScene('Menu')
 widget = require "widget"
 
@@ -36,19 +35,8 @@ scene.createScene = (event) =>
   @view\insert(background)
   @view\insert(play_button)
 
-scene.enterScene = (event) =>
-
-scene.exitScene = (event) =>
-
-scene.destroyScene = (event) =>
-  if play_button then
-    play_button\removeSelf() -- widgets must be manually removed
-    play_button = nil
 
 scene\addEventListener( "createScene", scene )
-scene\addEventListener( "enterScene", scene )
-scene\addEventListener( "exitScene", scene )
-scene\addEventListener( "destroyScene", scene )
 
 return scene
 
