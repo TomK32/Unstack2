@@ -1,9 +1,9 @@
 
 export class Block
   colors: {
-    {200,0,0,255},
-    {0,200,0,255},
-    {0,0,200,255}
+    graphics.newGradient({200,50,50}, {255, 150,50}),
+    graphics.newGradient({50,200,50}, {150, 255,50}),
+    graphics.newGradient({50,50,200}, {50, 150,255}),
   }
 
   standardBlocks: {
@@ -35,13 +35,6 @@ export class Block
     if not @shape[y]
       @shape[y] = {}
     @shape[y][x] = block
-
-  blockToRect: (x,y) ->
-   return {
-     (x - 1) * game.block_size + 1,
-     (y - 1) * game.block_size + 1,
-     game.block_size - 2,
-     game.block_size - 2}
 
   randomStandardShape: ->
     shape = Block.standardBlocks[math.ceil(math.random() * #Block.standardBlocks)]
@@ -172,6 +165,15 @@ export class Field extends Block
     @createRects()
     return @
 
+  blockToRect: (x,y) ->
+    return {
+      (x - 1) * game.block_size + 1,
+      (y - 1) * game.block_size + 1,
+      game.block_size - 2,
+      game.block_size - 2
+    }
+
+
   removeSelf: =>
     for y, row in pairs(@shape)
       for x, block in pairs(row)
@@ -184,7 +186,7 @@ export class Field extends Block
         if block == 1
           color = @colors[math.ceil(#@colors * math.random())]
           @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
-          @shape[y][x]\setFillColor(unpack(color))
+          @shape[y][x]\setFillColor(color)
           trans_x = math.random() * (x+2) * game.block_size
           trans_y = math.random() * (y+2) * game.block_size
           transition.from(@shape[y][x], {time: 500, alpha: 0, y: trans_y, x: trans_x})

@@ -20,7 +20,8 @@ leftAlignText = (text, x) ->
 
 createTarget = () ->
   -- the block we need to mark
-  game.targetBlock = Field(Block.random().shape, game.target_group, nil, {{255,255,0,255}})
+  gradient = graphics.newGradient({255,200,0}, {255, 255,0})
+  game.targetBlock = Field(Block.random().shape, game.target_group, nil, {gradient})
 
 
 gestureShape = (event) ->
