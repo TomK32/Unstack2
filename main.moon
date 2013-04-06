@@ -11,10 +11,16 @@ export game = {
   running_score: 0, -- to increase the score with some easing
   time_for_level: 1000 * 10
 
-  gestureBlock: Block({})
+  field: nil,
+  gestureBlock: Block({}),
   targetBlock: nil,
-  last_target_time: 0
+  last_target_time: 0,
 
+  last_movement: 0,
+  reset: ->
+    game.time_remaining = nil
+    game.last_movement = 0
+    game.last_target_time = 0
 }
 
 
