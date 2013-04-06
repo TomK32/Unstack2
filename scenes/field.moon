@@ -42,6 +42,9 @@ gestureShape = (event) ->
   if game.gestureBlock\isLike(game.targetBlock) then
     game.field\substract(match)
     game.targetBlock\removeSelf()
+    game.score += 20 - (event.time - game.last_target_time)/1000
+    game.time_remaining += math.ceil(event.time - game.last_target_time)/5000
+    game.last_target_time = event.time
     createTarget()
   return true
 
@@ -55,11 +58,22 @@ updateTimerDisplay = (event) ->
   else
     timer_color = {255, 150 * (2-2*t),  0,255}
   game.timer_display\setTextColor(unpack(timer_color))
+  game.timer_display.x = display.contentWidth - game.block_size - game.timer_display.width
+
+
+updateScoreDisplay = (event) ->
+
+  if game.running_score + 3 <= game.score
+    game.running_score += 3
+  elseif game.running_score + 1 <= game.score
+    game.running_score += 1
+  game.score_display.text = game.running_score
 
 gameLoop = (event) ->
   if game.time_remaining < event.time
     storyboard.gotoScene('scenes.finished')
     return
+  updateScoreDisplay(event)
   updateTimerDisplay(event)
 
 
@@ -86,11 +100,25 @@ scene.createScene = (event) =>
   game.target_group.x = game.block_size / 2
   createTarget()
 
-  game.timer_display = display.newText(' ', game.block_size * 5, game.block_size / 2, native.systemFontBold, game.block_size)
+  game.level_display = display.newText('lvl ' .. game.level, 0, game.block_size * 2, native.systemFontBold, game.block_size)
+  game.level_display.x = display.contentWidth - game.level_display.width
 
-  game.time_remaining = 1000 * 6
+  game.timer_display = display.newText(' ', 0, game.block_size, native.systemFontBold, game.block_size)
+
+  game.time_remaining = 1000 * 60
+
+  game.score_display = display.newText(game.score, game.block_size * 4, game.block_size, native.systemFontBold, game.block_size)
+
+
   timer.performWithDelay 1, => Runtime\addEventListener("enterFrame", gameLoop)
   @view
+
+scene.destroyScene = () =>
+  timer.performWithDelay 1, => Runtime\removeEventListener("enterFrame", gameLoop)
+  game.timer_display\remove()
+  game.level_display\remove()
+
+
 --Runtime\addEventListener( "touch", gestureShape )
 scene\addEventListener( "createScene", scene )
 --Runtime\addEventListener( "enterFrame", game.field.draw)
