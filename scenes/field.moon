@@ -20,7 +20,7 @@ leftAlignText = (text, x) ->
 
 createTarget = () ->
   -- the block we need to mark
-  game.targetBlock = Field(Block.random().shape, game.target_group)
+  game.targetBlock = Field(Block.random().shape, game.target_group, nil, {{255,255,0,255}})
 
 
 gestureShape = (event) ->
@@ -49,7 +49,6 @@ gestureShape = (event) ->
     game.field\substract(game.gestureBlock)
     game.targetBlock\removeSelf()
     game.score += 20 - (event.time - game.last_target_time)/1000
-    game.time_remaining += math.ceil(event.time - game.last_target_time)/5000
     game.last_target_time = event.time
     createTarget()
   return true

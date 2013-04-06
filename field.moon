@@ -12,10 +12,12 @@ export class Block
     {{false, 1,1}, {1, 1, false}}, -- z
     {{1,1, false}, {false, 1, 1}}, -- inverse z
     {{1,1,1}}, -- long john
+    {{1,1}}, -- little johnny
     {{1,1,1},{1,false,1}, {1,1,1}}, -- circle
     {{1,1}, {1,1}}, -- massive block
     {{1,1}, {false, 1}},
     {{1,1}, {1, false}}
+    {{1,1}}, -- little johnny
   }
 
   new: (shape) =>
@@ -162,10 +164,11 @@ export class Block
 
 export class Field extends Block
 
-  new: (shape, group, level) =>
+  new: (shape, group, level, colors) =>
     @group = group
     @level = level
     @shape = shape
+    @colors = colors
     @createRects()
     return @
 
@@ -179,7 +182,7 @@ export class Field extends Block
     for y, row in pairs(@shape)
       for x, block in pairs(row)
         if block == 1
-          color = Field.colors[math.ceil(#Field.colors * math.random())]
+          color = @colors[math.ceil(#@colors * math.random())]
           @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
           @shape[y][x]\setFillColor(unpack(color))
           trans_x = math.random() * (x+2) * game.block_size
