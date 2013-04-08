@@ -1,11 +1,6 @@
 --  Unstack2 Field
 --
 --  Copyright 2011-2013 Ananasblau.com. All rights reserved.
------------------------------------------------------------------------------------------
---
--- menu.lua
---
------------------------------------------------------------------------------------------
 
 scene = storyboard.newScene('Field')
 widget = require "widget"

@@ -1,11 +1,6 @@
 --  Unstack2 Menu
 --
 --  Copyright 2011-2013 Ananasblau.com. All rights reserved.
------------------------------------------------------------------------------------------
---
--- menu.lua
---
------------------------------------------------------------------------------------------
 
 scene = storyboard.newScene('Menu')
 widget = require "widget"
@@ -26,8 +21,8 @@ backgroundBlocks = (group) ->
   timer.performWithDelay 3000, -> backgroundBlocks(group)
 
 -- Called when the scene's view does not exist:
-scene.createScene = (event) =>
 
+scene.enterScene = (event) =>
   -- display a background image
   background = display.newImageRect( "images/menu_background.png", display.contentWidth, display.contentHeight )
   background\setReferencePoint( display.TopLeftReferencePoint )
@@ -51,7 +46,7 @@ scene.createScene = (event) =>
 
   @view\insert(play_button)
 
-scene.enterScene = (event) ->
+scene.createScene = (event) =>
   doBackgroundBlocks = true
   backgroundBlocks(background_group)
 

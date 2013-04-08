@@ -6,9 +6,12 @@ widget = require "widget"
 
 local title
 
-gotoMainMenu = () ->
+gotoMainMenu = (event) ->
+  Runtime\removeEventListener("touch", gotoMainMenu)
+  Runtime\removeEventListener("tap", gotoMainMenu)
   storyboard.purgeScene()
   storyboard.gotoScene("scenes.menu", "fade", 50)
+
   return true
 
 scene.createScene = (event) =>
@@ -31,11 +34,12 @@ scene.createScene = (event) =>
   @view\insert(a)
   @view\insert(b)
   @view\insert(title)
+  timer.performWithDelay 1, ->
+    Runtime\addEventListener("touch", gotoMainMenu)
+    Runtime\addEventListener("tap", gotoMainMenu)
   @view
 
 scene\addEventListener( "createScene", scene )
-Runtime\addEventListener("touch", gotoMainMenu)
-Runtime\addEventListener("tap", gotoMainMenu)
 
 return scene
 -- storyboard.gotoScene("scenes.field")
