@@ -34,7 +34,7 @@ scene.enterScene = (event) =>
   play_button = widget.newButton({
     label: "Play Now",
     labelColor: { default: {0}, over: {0} },
-    width: 154, height: 40,
+    width: game.block_size * 6, height: game.block_size * 2,
     onRelease: ->
       storyboard.gotoScene("scenes.field", "fade", 50)
       analytics.newEvent("design", {event_id: "menu:play"})
