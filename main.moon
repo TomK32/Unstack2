@@ -35,12 +35,12 @@ export game = {
   gestureBlock: Block({}),
   targetBlock: nil,
   last_target_time: 0,
+  sounds: require('sounds')
 
   reset: ->
     game.time_remaining = nil
     game.last_target_time = 0
 }
-
 
 display.setStatusBar( display.HiddenStatusBar )
 

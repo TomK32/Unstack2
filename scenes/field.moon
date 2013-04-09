@@ -49,7 +49,9 @@ gestureShape = (event) ->
     game.score += 20 - (time_for_gesture)/1000
     game.last_target_time = event.time
     createTarget()
+    game.sounds.play('shape_solved')
   elseif event.phase == 'ended'
+    game.sounds.play('shape_failed')
     analytics.newEvent("design", {event_id: "gesturing:failed", area: game.level})
   return true
 
@@ -134,6 +136,7 @@ scene.createScene = (event) =>
 
 scene.enterScene = (event) =>
   game.reset()
+  game.sounds.play('level_start')
   analytics.newEvent('design', {event_id: 'level.new', area: game.level})
   game.level_display.text = 'lvl ' ..game.level
 
