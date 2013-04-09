@@ -19,9 +19,9 @@ createTarget = () ->
   gradient = graphics.newGradient({255,200,0}, {255, 255,0})
   game.targetBlock = Field(Block.random().shape, game.target_group, nil, {gradient})
 
-
 gestureShape = (event) ->
   if event.phase == 'began'
+    analytics.newEvent("design", {event_id: 'gesturing:begin'})
     game.gestureShapePoints = {} -- takes {x, y} pixel coords
     game.gestureBlock = Block({}) -- the block we draw
   --table.insert(game.gestureShapePoints, {event.x, event.y})
@@ -43,10 +43,14 @@ gestureShape = (event) ->
   --       wanted block it needs to be normalized first
 
   if game.targetBlock and game.gestureBlock\isLike(game.targetBlock) then
+    time_for_gesture = event.time - game.last_target_time
+    analytics.newEvent("design", {event_id: "gesturing:success", area: game.level, message: time_remaining})
     game.field\substract(game.gestureBlock)
-    game.score += 20 - (event.time - game.last_target_time)/1000
+    game.score += 20 - (time_for_gesture)/1000
     game.last_target_time = event.time
     createTarget()
+  elseif event.phase == 'ended'
+    analytics.newEvent("design", {event_id: "gesturing:failed", area: game.level})
   return true
 
 
@@ -76,15 +80,18 @@ gameLoop = (event) ->
   if not game.time_remaining
     game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 30000
   if game.time_remaining < event.time
-    game.score -= math.sqrt(game.field\blocksLeft())
+    blocks_left = game.field\blocksLeft()
+    game.score -= math.sqrt(blocks_left)
+    analytics.newEvent('design', {event_id: 'level.ended', area: game.level, message: blocks_left})
     game.score += game.level
     Runtime\removeEventListener("enterFrame", gameLoop)
     game.reset()
     game.level += 1
     storyboard.reloadScene()
     return true
-  updateScoreDisplay(event)
-  updateTimerDisplay(event)
+  else
+    updateScoreDisplay(event)
+    updateTimerDisplay(event)
 
 
 -- Called when the scene's view does not exist:
@@ -124,6 +131,7 @@ scene.createScene = (event) =>
 
 scene.enterScene = (event) =>
   game.reset()
+  analytics.newEvent('design', {event_id: 'level.new', area: game.level})
   game.level_display.text = 'lvl ' ..game.level
 
   game.field = Field.random(@field_group, game.level, game.width, game.height)

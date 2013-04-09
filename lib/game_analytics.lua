@@ -15,7 +15,7 @@
 -- Written by Jacob Nielsen for Game Analytics in 2013
 ----------------------------------------------------------------------------------
 
-local GameAnalytics = {}
+GameAnalytics = {}
 
 local json = require "json" 
 local crypto = require "crypto"
@@ -411,4 +411,3 @@ else
 	GAPrint ( "It is not possible to detect if the device is roaming." ) 
 end
 
-return GameAnalytics

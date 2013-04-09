@@ -1,18 +1,25 @@
 --
 -- Unstack2 main.lua
 
-export analytics = require ("lib.game_analytics")
+require ("lib.game_analytics")
+GameAnalytics.newEventWithoutDelay = GameAnalytics.newEvent
+GameAnalytics.newEvent = (category, ...) ->
+  opts = ...
+  timer.performWithDelay 1, ->
+    analytics.newEventWithoutDelay(category, opts)
+
+export analytics = GameAnalytics
 analytics.isDebug = false
 analytics.submitSystemInfo = true
 analytics.archiveEvents = true
-analytics\init({
+analytics.init({
   game_key: "738db647ca81d62ce54bddd8dc2d6f21",
   secret_key: "1332438b04ed432511601f15ac8225500d3039ee",
-  build: require("version")
+  build_name: require("version")
 })
 
 -- log events
-analytics.newEvent("game", {event_id: "loading"})
+analytics.newEvent("design", {event_id: "loading"})
 
 require 'field'
 

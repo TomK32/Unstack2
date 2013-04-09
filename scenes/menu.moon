@@ -37,6 +37,7 @@ scene.enterScene = (event) =>
     width: 154, height: 40,
     onRelease: ->
       storyboard.gotoScene("scenes.field", "fade", 50)
+      analytics.newEvent("design", {event_id: "menu:play"})
       return true
   })
 
