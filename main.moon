@@ -12,11 +12,7 @@ export analytics = GameAnalytics
 analytics.isDebug = false
 analytics.submitSystemInfo = true
 analytics.archiveEvents = true
-analytics.init({
-  game_key: "738db647ca81d62ce54bddd8dc2d6f21",
-  secret_key: "1332438b04ed432511601f15ac8225500d3039ee",
-  build_name: require("version")
-})
+analytics.init(require('conf.analytics'))
 
 -- log events
 analytics.newEvent("design", {event_id: "loading"})
