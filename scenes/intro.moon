@@ -7,13 +7,6 @@ widget = require "widget"
 local title
 
 gotoMainMenu = (event) ->
-  if storyboard.getCurrentSceneName() != 'scenes.intro'
-    return
-  if event and (event.name == 'tap' or event.name == 'touch')
-    analytics.newEvent("game", {event_id: "intro:skipped", message: event.time})
-  Runtime\removeEventListener("touch", gotoMainMenu)
-  Runtime\removeEventListener("tap", gotoMainMenu)
-  storyboard.purgeScene()
   storyboard.gotoScene("scenes.menu", "fade", 50)
 
   return true
@@ -38,11 +31,16 @@ scene.createScene = (event) =>
   @view\insert(a)
   @view\insert(b)
   @view\insert(title)
-  timer.performWithDelay 1, ->
-    Runtime\addEventListener("touch", gotoMainMenu)
-    Runtime\addEventListener("tap", gotoMainMenu)
+  @view\addEventListener("touch", gotoMainMenu)
+  @view\addEventListener("tap", gotoMainMenu)
   @view
 
+scene.exitScene = (event) =>
+  if event and (event.name == 'tap' or event.name == 'touch')
+    analytics.newEvent("design", {event_id: "intro:skipped", message: event.time})
+  storyboard.purgeScene()
+
+scene\addEventListener( "exitScene", scene )
 scene\addEventListener( "createScene", scene )
 
 return scene
