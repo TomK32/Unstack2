@@ -1,6 +1,19 @@
 --
 -- Unstack2 main.lua
 
+export analytics = require ("lib.game_analytics")
+analytics.isDebug = false
+analytics.submitSystemInfo = true
+analytics.archiveEvents = true
+analytics\init({
+  game_key: "738db647ca81d62ce54bddd8dc2d6f21",
+  secret_key: "1332438b04ed432511601f15ac8225500d3039ee",
+  build: require("version")
+})
+
+-- log events
+analytics.newEvent("game", {event_id: "loading"})
+
 require 'field'
 
 block_size = math.floor(display.contentWidth / 10 / 8) * 8

@@ -7,6 +7,10 @@ widget = require "widget"
 local title
 
 gotoMainMenu = (event) ->
+  if storyboard.getCurrentSceneName() != 'scenes.intro'
+    return
+  if event and (event.name == 'tap' or event.name == 'touch')
+    analytics.newEvent("game", {event_id: "intro:skipped", message: event.time})
   Runtime\removeEventListener("touch", gotoMainMenu)
   Runtime\removeEventListener("tap", gotoMainMenu)
   storyboard.purgeScene()
