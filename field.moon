@@ -187,9 +187,10 @@ export class Field extends Block
           color = @colors[math.ceil(#@colors * math.random())]
           @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
           @shape[y][x]\setFillColor(color)
+          @shape[y][x].blendMode = 'add'
           trans_x = math.random() * x * 2 * game.block_size
           trans_y = math.random() * y * 2 * game.block_size
-          transition.from(@shape[y][x], {time: 500, alpha: 0, y: trans_y, x: trans_x})
+          transition.from(@shape[y][x], {time: 500, alpha: 0, width: game.block_size * 20, y: trans_y, x: trans_x})
           @group\insert(@shape[y][x])
 
   random: (group, level, height, width) ->
@@ -218,9 +219,11 @@ export class Field extends Block
     for y, row in pairs(block.shape)
       for x, b in pairs(row)
         if @shape[y] and @shape[y][x]
-          transition.to(@shape[y][x], {time: 1000, alpha: 0})
-          timer.performWithDelay 1000, ->
-            b = field\get(x,y)
-            if b and b.removeSelf
-              b\removeSelf()
-            field\set(x, y, nil)
+          transition.to(@shape[y][x], {easing: easing.inExpo, time: 1000, alpha: 0, height: game.block_size*2, width: game.block_size * 2, completed: ->
+            timer.performWithDelay 1000, ->
+              b = field\get(x,y)
+              if b and b.removeSelf
+                b\removeSelf()
+              field\set(x, y, nil)
+          })
+

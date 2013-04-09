@@ -101,8 +101,11 @@ scene.createScene = (event) =>
   @field_group = group
   @view\insert(group)
   group.y = 4 * game.block_size
-  background = display.newRect(0, 0, game.width * game.block_size, game.height * game.block_size)
-  background\setFillColor(30,30,30,255)
+
+  background = display.newImageRect( "images/menu_background.png", display.contentWidth, display.contentHeight )
+  background\setReferencePoint( display.TopLeftReferencePoint )
+  background.x, background.y = 0, 0
+  background.blendMode = 'add'
   group\insert(background)
 
   -- setup playing field
