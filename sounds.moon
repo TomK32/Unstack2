@@ -1,5 +1,8 @@
 
 sounds = {}
+sounds.music = {
+  audio.loadSound('sounds/DST-The86.mp3')
+}
 sounds.level_start = audio.loadSound('sounds/level_start.mp3')
 sounds.shape_failed = {
   audio.loadSound('sounds/shape_failed.mp3')
