@@ -52,6 +52,7 @@ export game = {
     game.last_target_time = 0
 }
 
+game.sounds.play('music')
 display.setStatusBar( display.HiddenStatusBar )
 
 export storyboard = require "storyboard"
