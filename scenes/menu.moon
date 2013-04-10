@@ -34,7 +34,6 @@ scene.enterScene = (event) =>
   play_button = widget.newButton({
     label: "Play Now",
     labelColor: { default: {0}, over: {0} },
-    width: game.block_size * 6, height: game.block_size * 2,
     onRelease: ->
       storyboard.gotoScene("scenes.field", "fade", 50)
       analytics.newEvent("design", {event_id: "menu:play"})
@@ -43,7 +42,7 @@ scene.enterScene = (event) =>
 
   play_button\setReferencePoint(display.CenterReferencePoint)
   play_button.x = display.contentWidth * 0.5
-  play_button.y = display.contentHeight - 125
+  play_button.y = display.contentHeight * 0.7
 
   @view\insert(play_button)
 

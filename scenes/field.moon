@@ -20,6 +20,8 @@ createTarget = () ->
   game.targetBlock = Field(Block.random().shape, game.target_group, nil, {gradient})
 
 gestureShape = (event) ->
+  if not game.running
+    return
   if event.phase == 'began'
     analytics.newEvent("design", {event_id: 'gesturing:begin'})
     game.gestureShapePoints = {} -- takes {x, y} pixel coords
@@ -46,7 +48,7 @@ gestureShape = (event) ->
     time_for_gesture = event.time - game.last_target_time
     analytics.newEvent("design", {event_id: "gesturing:success", area: 'lvl' .. game.level, value: time_remaining})
     game.field\substract(game.gestureBlock)
-    game.score += 20 - (time_for_gesture)/1000
+    game.score += math.ceil(20 - (time_for_gesture)/1000)
     game.last_target_time = event.time
     createTarget()
     game.sounds.play('shape_solved')
@@ -56,7 +58,7 @@ gestureShape = (event) ->
   return true
 
 
-updateTimerDisplay = (event) ->
+scene.updateTimerDisplay = (event) ->
   t = event.time / game.time_remaining
   timer_color = nil
   game.timer_display.text = math.floor((game.time_remaining - event.time) / 500)
@@ -68,7 +70,7 @@ updateTimerDisplay = (event) ->
 
   leftAlignText(game.timer_display, game.block_size * 4)
 
-updateScoreDisplay = (event) ->
+scene.updateScoreDisplay = (event) ->
   if game.running_score + 3 <= game.score
     game.running_score += 3
   elseif game.running_score + 1 <= game.score
@@ -78,22 +80,71 @@ updateScoreDisplay = (event) ->
   game.score_display.text = math.floor(game.running_score)
   leftAlignText(game.score_display, game.block_size * 4)
 
-gameLoop = (event) ->
+scene.gameLoop = (event) ->
+  if not game.running
+    return
   if not game.time_remaining
-    game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 30000
+    game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 3000
+  scene.updateScoreDisplay(event)
+  scene.updateTimerDisplay(event)
   if game.time_remaining < event.time
-    blocks_left = game.field\blocksLeft()
-    game.score -= math.sqrt(blocks_left)
-    analytics.newEvent('design', {event_id: 'level.ended', area: 'lvl' .. game.level, value: blocks_left})
-    game.score += game.level
-    Runtime\removeEventListener("enterFrame", gameLoop)
-    game.reset()
-    game.level += 1
-    storyboard.reloadScene()
+    scene.endLevel()
     return true
-  else
-    updateScoreDisplay(event)
-    updateTimerDisplay(event)
+
+scene.endLevel = () ->
+  blocks_left = game.field\blocksLeft()
+  game.score -= math.floor(math.sqrt(blocks_left))
+  game.score += game.level
+  game.running_score = game.score
+  Runtime\removeEventListener("enterFrame", gameLoop)
+  scene.updateScoreDisplay()
+  analytics.newEvent('design', {event_id: 'level.ended', area: 'lvl' .. game.level, value: blocks_left})
+
+  game.running = false
+  end_level_dialog = display.newGroup()
+
+  x = display.contentWidth * 0.5
+  y = game.block_size * 4.5
+  background = display.newRect(game.block_size * 1.5, y, display.contentWidth - game.block_size * 3, display.contentHeight - game.block_size * 5)
+  background\setFillColor(0,0,0,200)
+  end_level_dialog\insert(background)
+  y += game.block_size * 2
+
+  print(game.score, game.score_level_start)
+  score_text = "You scored " .. math.floor(game.score - game.score_level_start) .. ' at Level ' .. game.level
+  score_text = display.newText(score_text, 0, y)
+  score_text.x = x
+  end_level_dialog\insert(score_text)
+
+  y += score_text.height + game.block_size
+
+  next_button = widget.newButton({
+    label: "Next Level",
+    labelColor: { default: {0}, over: {0} },
+    onRelease: (event) ->
+      storyboard.purgeScene()
+      storyboard.gotoScene("scenes.field")
+      return true
+  })
+  next_button.x = x
+  next_button.y = y
+  end_level_dialog\insert(next_button)
+  y += next_button.height * 2
+
+  menu_button = widget.newButton({
+    label: "Go To Menu",
+    labelColor: { default: {0}, over: {0} },
+    onRelease: (event) ->
+      storyboard.gotoScene("scenes.menu", "fade", 50)
+      analytics.newEvent("design", {event_id: "game:end"})
+      return true
+  })
+  menu_button.x = x
+  menu_button.y = y
+
+  end_level_dialog\insert(menu_button)
+  scene.view.end_level_dialog = end_level_dialog
+  scene.view\insert(end_level_dialog)
 
 
 -- Called when the scene's view does not exist:
@@ -127,7 +178,6 @@ scene.createScene = (event) =>
 
   game.score_display = display.newText(game.score, 0, game.block_size, native.systemFontBold, game.block_size)
 
-
   @view\insert(game.timer_display)
   @view\insert(game.score_display)
   @view\insert(game.level_display)
@@ -135,6 +185,13 @@ scene.createScene = (event) =>
   @view
 
 scene.enterScene = (event) =>
+  game.reset()
+  game.level += 1
+  game.running = true
+  game.running_score = game.score
+  game.score_level_start = game.score
+  if @view.end_level_dialog
+    @view.end_level_dialog\removeSelf()
   game.reset()
   game.sounds.play('level_start')
   analytics.newEvent('design', {event_id: 'level.new', area: 'lvl' .. game.level})
@@ -144,10 +201,10 @@ scene.enterScene = (event) =>
   game.field.target = game.target_group
 
   createTarget()
-  timer.performWithDelay 1, -> Runtime\addEventListener("enterFrame", gameLoop)
+  timer.performWithDelay 1, -> Runtime\addEventListener("enterFrame", scene.gameLoop)
 
 scene.exitScene = () =>
-  Runtime\removeEventListener("enterFrame", gameLoop)
+  Runtime\removeEventListener("enterFrame", scene.gameLoop)
   if game.field
     game.field\removeSelf()
   --storyboard.purgeScene()

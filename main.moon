@@ -27,13 +27,15 @@ analytics.init(require('conf.analytics'))
 -- log events
 analytics.newEvent("design", {event_id: "loading"})
 
+GGScoreoid = require("lib.GGScoreoid")
+
 require 'field'
 
 block_size = math.floor(display.contentWidth / 10 / 8) * 8
 export game = {
   -- apply /8*8 on block size to get nicer numbers
   block_size: block_size,
-  level: 1,
+  level: 0,
   score: 0,
   running_score: 0, -- to increase the score with some easing
   time_for_level: 1000 * 10
