@@ -61,7 +61,7 @@ gestureShape = (event) ->
 scene.updateTimerDisplay = (event) ->
   t = event.time / game.time_remaining
   timer_color = nil
-  game.timer_display.text = math.floor((game.time_remaining - event.time) / 500)
+  game.timer_display.text = math.floor((game.time_remaining - event.time) / 1000)
   if t < 0.5
     timer_color = {255, 255, 255, 255}
   else
@@ -84,12 +84,12 @@ scene.gameLoop = (event) ->
   if not game.running
     return
   if not game.time_remaining
-    game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 3000
-  scene.updateScoreDisplay(event)
-  scene.updateTimerDisplay(event)
+    game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 30000
   if game.time_remaining < event.time
     scene.endLevel()
     return true
+  scene.updateScoreDisplay(event)
+  scene.updateTimerDisplay(event)
 
 scene.endLevel = () ->
   blocks_left = game.field\blocksLeft()
