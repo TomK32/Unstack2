@@ -144,9 +144,10 @@ scene.enterScene = (event) =>
   game.field.target = game.target_group
 
   createTarget()
-  timer.performWithDelay 1, => Runtime\addEventListener("enterFrame", gameLoop)
+  timer.performWithDelay 1, -> Runtime\addEventListener("enterFrame", gameLoop)
 
 scene.exitScene = () =>
+  Runtime\removeEventListener("enterFrame", gameLoop)
   if game.field
     game.field\removeSelf()
   --storyboard.purgeScene()
