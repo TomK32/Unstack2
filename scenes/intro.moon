@@ -37,7 +37,7 @@ scene.createScene = (event) =>
 
 scene.exitScene = (event) =>
   if event and (event.name == 'tap' or event.name == 'touch')
-    analytics.newEvent("design", {event_id: "intro:skipped", message: event.time})
+    analytics.newEvent("design", {event_id: "intro:skipped", value: event.time})
   storyboard.purgeScene()
 
 scene\addEventListener( "exitScene", scene )

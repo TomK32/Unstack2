@@ -13,7 +13,6 @@ sounds.play = (file) ->
   file = sounds[file]
   if type(file) == 'table'
     file = file[math.ceil(math.random() * #file)]
-  print(file)
   audio.play(file)
 
 return sounds

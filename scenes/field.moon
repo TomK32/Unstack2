@@ -44,7 +44,7 @@ gestureShape = (event) ->
 
   if game.targetBlock and game.gestureBlock\isLike(game.targetBlock) then
     time_for_gesture = event.time - game.last_target_time
-    analytics.newEvent("design", {event_id: "gesturing:success", area: game.level, message: time_remaining})
+    analytics.newEvent("design", {event_id: "gesturing:success", area: 'lvl' .. game.level, value: time_remaining})
     game.field\substract(game.gestureBlock)
     game.score += 20 - (time_for_gesture)/1000
     game.last_target_time = event.time
@@ -52,7 +52,7 @@ gestureShape = (event) ->
     game.sounds.play('shape_solved')
   elseif event.phase == 'ended'
     game.sounds.play('shape_failed')
-    analytics.newEvent("design", {event_id: "gesturing:failed", area: game.level})
+    analytics.newEvent("design", {event_id: "gesturing:failed", area: 'lvl' .. game.level})
   return true
 
 
@@ -84,7 +84,7 @@ gameLoop = (event) ->
   if game.time_remaining < event.time
     blocks_left = game.field\blocksLeft()
     game.score -= math.sqrt(blocks_left)
-    analytics.newEvent('design', {event_id: 'level.ended', area: game.level, message: blocks_left})
+    analytics.newEvent('design', {event_id: 'level.ended', area: 'lvl' .. game.level, value: blocks_left})
     game.score += game.level
     Runtime\removeEventListener("enterFrame", gameLoop)
     game.reset()
@@ -137,7 +137,7 @@ scene.createScene = (event) =>
 scene.enterScene = (event) =>
   game.reset()
   game.sounds.play('level_start')
-  analytics.newEvent('design', {event_id: 'level.new', area: game.level})
+  analytics.newEvent('design', {event_id: 'level.new', area: 'lvl' .. game.level})
   game.level_display.text = 'lvl ' ..game.level
 
   game.field = Field.random(@field_group, game.level, game.width, game.height)
