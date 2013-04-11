@@ -50,8 +50,11 @@ export game = {
   sounds: require('sounds')
 
   reset: ->
+    game.running = true
+    game.running_score = game.score
+    game.score_level_start = game.score
     game.time_remaining = nil
-    game.last_target_time = 0
+    game.last_target_time = nil
 }
 
 game.sounds.play('music')

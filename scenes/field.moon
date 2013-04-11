@@ -12,12 +12,14 @@ rightAlignText = (text, x) ->
 leftAlignText = (text, x) ->
   text.x = x + text.width / 2 + game.block_size * 0.2
 
+
 createTarget = () ->
   -- the block we need to mark
   if game.targetBlock
     game.targetBlock\removeSelf()
   gradient = graphics.newGradient({255,200,0}, {255, 255,0})
   game.targetBlock = Field(Block.random().shape, game.target_group, nil, {gradient})
+  game.last_target_time = os.time()
 
 gestureShape = (event) ->
   if not game.running
@@ -45,11 +47,10 @@ gestureShape = (event) ->
   --       wanted block it needs to be normalized first
 
   if game.targetBlock and game.gestureBlock\isLike(game.targetBlock) then
-    time_for_gesture = event.time - game.last_target_time
+    time_for_gesture = os.time() - game.last_target_time
     analytics.newEvent("design", {event_id: "gesturing:success", area: 'lvl' .. game.level, value: time_remaining})
     game.field\substract(game.gestureBlock)
     game.score += math.ceil(20 - (time_for_gesture)/1000)
-    game.last_target_time = event.time
     createTarget()
     game.sounds.play('shape_solved')
   elseif event.phase == 'ended'
@@ -111,8 +112,8 @@ scene.endLevel = () ->
   y += game.block_size * 2
 
   print(game.score, game.score_level_start)
-  score_text = "You scored " .. math.floor(game.score - game.score_level_start) .. ' at Level ' .. game.level
-  score_text = display.newText(score_text, 0, y)
+  score_text = "You scored " .. math.floor(game.score - game.score_level_start)
+  score_text = display.newText(score_text, 0, y, native.systemFontBold, 16)
   score_text.x = x
   end_level_dialog\insert(score_text)
 
@@ -187,9 +188,6 @@ scene.createScene = (event) =>
 scene.enterScene = (event) =>
   game.reset()
   game.level += 1
-  game.running = true
-  game.running_score = game.score
-  game.score_level_start = game.score
   if @view.end_level_dialog
     @view.end_level_dialog\removeSelf()
   game.reset()
