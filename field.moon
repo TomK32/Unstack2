@@ -219,7 +219,7 @@ export class Field extends Block
     for y, row in pairs(block.shape)
       for x, b in pairs(row)
         if @shape[y] and @shape[y][x]
-          transition.to(@shape[y][x], {easing: easing.inExpo, time: 1000, alpha: 0, height: game.block_size*2, width: game.block_size * 2, completed: ->
+          transition.to(@shape[y][x], {easing: easing.inExpo, time: 1000, alpha: 0, height: game.block_size*2, width: game.block_size * 2, onComplete: ->
             timer.performWithDelay 1000, ->
               b = field\get(x,y)
               if b and b.removeSelf
