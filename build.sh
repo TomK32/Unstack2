@@ -23,7 +23,7 @@ cp -R ../../conf .
 
 moonc .
 find . -name "*.moon" -exec ls {} \;
-GOOGLE_VERSION=echo $VERSION | sed -e s/\\.//g
+GOOGLE_VERSION=`echo $GAME_VERSION | sed -e 's/\\.//g'`
 sed -i.bak s/VERSION/$GOOGLE_VERSION/ build.settings
 
 
