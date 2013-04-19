@@ -42,6 +42,8 @@ gestureShape = (event) ->
 
   if event.phase == 'began' -- we needed a block first
     game.gesturing = true
+  if not game.gesturing
+    return
 
   -- keep track of wether we can give a bonus for having the swiping all blocks of the colour
   if not game.gestureBlock.last_color_num
@@ -52,6 +54,8 @@ gestureShape = (event) ->
 
   -- add to the shape we draw
   game.gestureBlock\set(block_x, block_y, 1)
+  scene.createGestureTrail(block_x, block_y)
+
   if scene.hint
     scene.hint\removeSelf()
 
@@ -85,6 +89,7 @@ gestureShape = (event) ->
   return true
 
 scene.errorGesturing = (event) ->
+  scene.resetGestureTrail()
   game.gestureBlock = Block({})
   if not game.gesturing or (game.last_gesture_error and game.last_gesture_error + 1000 > event.time)
     return false
@@ -99,6 +104,29 @@ scene.errorGesturing = (event) ->
   analytics.newEvent("design", {event_id: "gesturing:failed", area: game.lvlString()})
   game.sounds.play('shape_failed')
 
+scene.createGestureTrail = (x, y) ->
+  for i = 1, 1 do
+    rect = display.newRect(unpack(Field.blockToRect(x,y)))
+    --rect.blendMode = 'add'
+    rect\setFillColor(255,255,255,200)
+    transition.to(rect, {
+      time: 500, rotation: 90
+      height: game.block_size / 4, width: game.block_size / 4,
+    })
+    transition.to(rect, {
+      time: 2000, alpha: 0,
+      transition: easing.inExpo,
+      onComplete: =>
+        if @.removeSelf
+          @\removeSelf()
+    })
+    game.gesture_group\insert(rect)
+
+scene.resetGestureTrail = ->
+  if game.gesture_group and game.gesture_group.removeSelf
+    game.gesture_group\removeSelf()
+  game.gesture_group = display.newGroup()
+  scene.field_group\insert(game.gesture_group)
 
 scene.updateTimerDisplay = (event) ->
   t = event.time / game.time_remaining
@@ -230,6 +258,7 @@ scene.createScene = (event) =>
   @view
 
 scene.enterScene = (event) =>
+  scene.resetGestureTrail()
   scene.needsHint = true
   if scene.hint
     scene.hint\removeSelf()
