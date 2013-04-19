@@ -17,8 +17,6 @@ analytics.init(require('conf.analytics'))
 -- log events
 analytics.newEvent("design", {event_id: "loading"})
 
-GGScoreoid = require("lib.GGScoreoid")
-
 require 'field'
 
 block_size = math.floor(display.contentWidth / 10 / 8) * 8

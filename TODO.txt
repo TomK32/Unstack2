@@ -1,0 +1,18 @@
+
+√ done
+X won't do
+
+
+* √ level score screen
+* √ (1) score multiplier if drawing blocks of same colour
+* √ (1) score multiplier for # of blocks to be drawn (2-8)
+* 1 tap target to get next block
+* X tap lvl to go ahead
+* 4 end level if nothing left to solve
+* 4 online highscores
+* √ (2 => 4) show hint (make it an extra block)
+* 2 particle effect when drawing
+* √ (4 => 1) rainbow when solving a shape
+* X loop music
+* 8 mix custom music based on the blocks remove
+

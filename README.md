@@ -1,12 +1,11 @@
 
 
-A port of Unstack to android using Gideros.
+A port of Unstack to android using CoronaSDK.
 
 
 ## Autors
 
 * Thomas R. Koll
-
 
 ## References
 
