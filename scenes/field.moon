@@ -57,9 +57,9 @@ gestureShape = (event) ->
 
 
   if game.targetBlock and game.gestureBlock\isLike(game.targetBlock) then
-    time_for_gesture = os.time() - game.last_target_time
-    analytics.newEvent("design", {event_id: "gesturing:success", area: 'lvl' .. game.level, value: time_remaining})
     game.field\substract(game.gestureBlock)
+    time_for_gesture = os.time() - game.last_target_time
+    analytics.newEvent("design", {event_id: "gesturing:success", area: game.lvlString(), value: time_remaining})
     bonus = 1
     if game.gestureBlock.color_bonus
       bonus = 2
@@ -96,7 +96,7 @@ scene.errorGesturing = (event) ->
       scene.error_background\setFillColor(255,0,0,0)
 
   })
-  analytics.newEvent("design", {event_id: "gesturing:failed", area: 'lvl' .. game.level})
+  analytics.newEvent("design", {event_id: "gesturing:failed", area: game.lvlString()})
   game.sounds.play('shape_failed')
 
 
@@ -140,7 +140,7 @@ scene.endLevel = () ->
   game.running_score = game.score
   Runtime\removeEventListener("enterFrame", gameLoop)
   scene.updateScoreDisplay()
-  analytics.newEvent('design', {event_id: 'level.ended', area: 'lvl' .. game.level, value: blocks_left})
+  analytics.newEvent('design', {event_id: 'level.ended', area: game.lvlString(), value: blocks_left})
 
   game.running = false
   end_level_dialog = display.newGroup()
@@ -240,8 +240,8 @@ scene.enterScene = (event) =>
     @view.end_level_dialog\removeSelf()
   game.reset()
   game.sounds.play('level_start')
-  analytics.newEvent('design', {event_id: 'level.new', area: 'lvl' .. game.level})
-  game.level_display.text = 'lvl ' ..game.level
+  analytics.newEvent('design', {event_id: 'level.new', area: game.lvlString()})
+  game.level_display.text = 'lvl ' .. game.level
 
   game.field = Field.random(@field_group, game.level, game.width, game.height)
   game.field.target = game.target_group
