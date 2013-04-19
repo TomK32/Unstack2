@@ -9,6 +9,7 @@ export class HintBlock extends Field
     @group = group
     @shape = shape
     @field = field
+    @\move(math.floor(@field\width() / 3), math.ceil(@field\height() / 3))
     @createRects()
     return @
 

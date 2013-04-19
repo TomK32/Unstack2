@@ -165,3 +165,13 @@ export class Block
         counter += 1
     return counter
 
+  move: (offset_x, offset_y) =>
+    new_shape = {}
+    print(offset_y, offset_x)
+    for y, row in pairs(@shape)
+      new_shape[y + offset_y] = {}
+      for x, tile in pairs(row)
+        new_shape[y + offset_y][x + offset_x] = tile
+    @shape = new_shape
+
+
