@@ -2,7 +2,7 @@ require 'field'
 
 export class HintBlock extends Field
   colors: {
-    graphics.newGradient({255,255,0,255}, {255, 255, 155, 255}),
+    graphics.newGradient({200,200,200,255}, {155, 155, 155, 255}),
   }
 
   new: (shape, group, field) =>

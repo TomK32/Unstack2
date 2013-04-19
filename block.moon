@@ -157,3 +157,11 @@ export class Block
       str = str .. "\n"
     return str
 
+  -- number of blocks in the shape
+  weight: () =>
+    counter = 0
+    for y, row in pairs(@shape)
+      for x, b in pairs(row)
+        counter += 1
+    return counter
+

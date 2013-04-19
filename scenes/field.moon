@@ -52,7 +52,7 @@ gestureShape = (event) ->
     time_for_gesture = os.time() - game.last_target_time
     analytics.newEvent("design", {event_id: "gesturing:success", area: 'lvl' .. game.level, value: time_remaining})
     game.field\substract(game.gestureBlock)
-    game.score += math.ceil(20 - (time_for_gesture)/1000)
+    game.score += math.ceil(20 - time_for_gesture) + game.gestureBlock\weight()
     createTarget()
     scene.needsHint = false
     game.sounds.play('shape_solved')
