@@ -141,7 +141,12 @@ scene.resetGestureTrail = ->
 scene.updateTimerDisplay = (event) ->
   t = event.time / game.time_remaining
   timer_color = nil
-  game.timer_display.text = math.floor((game.time_remaining - event.time) / 1000)
+  text = ''
+  if game.time_remaining - event.time < 10000 -- 10 secs
+    text = string.format("%.1f", (game.time_remaining - event.time) / 1000)
+  else
+    text = math.floor((game.time_remaining - event.time) / 1000)
+  game.timer_display.text = text
   if t < 0.5
     timer_color = {255, 255, 255, 255}
   else
