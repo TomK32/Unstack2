@@ -7,7 +7,6 @@ widget = require "widget"
 require 'field'
 
 doBackgroundBlocks = true
-background_group = display.newGroup()
 last_background_blocks = 0
 
 backgroundBlocks = (group) ->
@@ -24,7 +23,11 @@ backgroundBlocks = (group) ->
 -- Called when the scene's view does not exist:
 
 scene.enterScene = (event) =>
-  @view\insert(background_group)
+  scene.background_group = display.newGroup()
+  doBackgroundBlocks = true
+  backgroundBlocks(scene.background_group)
+
+  @view\insert(scene.background_group)
 
   play_button = widget.newButton({
     label: "Play Now",
@@ -40,10 +43,6 @@ scene.enterScene = (event) =>
   play_button.y = display.contentHeight * 0.7
 
   @view\insert(play_button)
-
-scene.createScene = (event) =>
-  doBackgroundBlocks = true
-  backgroundBlocks(background_group)
 
 scene.exitScene = (event) ->
   doBackgroundBlocks = false
