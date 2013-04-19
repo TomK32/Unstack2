@@ -23,12 +23,6 @@ backgroundBlocks = (group) ->
 -- Called when the scene's view does not exist:
 
 scene.enterScene = (event) =>
-  -- display a background image
-  background = display.newImageRect( "images/menu_background.png", display.contentWidth, display.contentHeight )
-  background\setReferencePoint( display.TopLeftReferencePoint )
-  background.x, background.y = 0, 0
-  @view\insert(background)
-
   @view\insert(background_group)
 
   play_button = widget.newButton({

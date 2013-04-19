@@ -170,12 +170,6 @@ scene.createScene = (event) =>
   @view\insert(group)
   group.y = 4 * game.block_size
 
-  background = display.newImageRect( "images/menu_background.png", display.contentWidth, display.contentHeight )
-  background\setReferencePoint( display.TopLeftReferencePoint )
-  background.x, background.y = 0, 0
-  background.blendMode = 'add'
-  group\insert(background)
-
   -- setup playing field
   group\addEventListener( "touch", gestureShape )
 
