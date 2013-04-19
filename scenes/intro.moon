@@ -27,7 +27,7 @@ scene.createScene = (event) =>
   title\setTextColor(255,255,100)
   title.x = center
 
-  c = display.newText('Music by: DST', 0, y + 150, native.systemFontBold, 16)
+  c = display.newText('Thanks to: devlol, #1gam, coronalabs', 0, y + 150, native.systemFontBold, 16)
   c.x = center
 
   d = display.newText('SFX by: ananasblau', 0, y + 170, native.systemFontBold, 16)
