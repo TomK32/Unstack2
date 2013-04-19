@@ -32,10 +32,12 @@ export class Field extends Block
           @\createRect(x, y, block)
 
   createRect: (x, y, block) =>
-    color = @colors[math.ceil(#@colors * math.random())]
+    color_num = math.ceil(#@colors * math.random())
+    color = @colors[color_num]
     @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
     @shape[y][x]\setFillColor(color)
     @shape[y][x].blendMode = 'add'
+    @shape[y][x].color_num = color_num
     trans_x = math.random() * x * 2 * game.block_size
     trans_y = math.random() * y * 2 * game.block_size
     transition.from(@shape[y][x], {

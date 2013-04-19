@@ -40,6 +40,14 @@ gestureShape = (event) ->
   elseif game.gestureBlock\get(block_x, block_y)
     -- nothing to do
     return true
+
+  -- keep track of wether we can give a bonus for having the swiping all blocks of the colour
+  if not game.gestureBlock.last_color_num
+    game.gestureBlock.last_color_num = block.color_num
+    game.gestureBlock.color_bonus = true
+  if game.gestureBlock.color_bonus
+    game.gestureBlock.color_bonus = game.gestureBlock.last_color_num == block.color_num
+
   game.gestureBlock\set(block_x, block_y, 1)
   if scene.hint
     scene.hint\removeSelf()
@@ -52,7 +60,15 @@ gestureShape = (event) ->
     time_for_gesture = os.time() - game.last_target_time
     analytics.newEvent("design", {event_id: "gesturing:success", area: 'lvl' .. game.level, value: time_remaining})
     game.field\substract(game.gestureBlock)
-    game.score += math.ceil(20 - time_for_gesture) + game.gestureBlock\weight()
+    bonus = 1
+    if game.gestureBlock.color_bonus
+      bonus = 2
+      bonus_text = display.newText("2x bonus", 0, game.block_size, native.systemFontBold, 16)
+      scene.view\insert(bonus_text)
+      rightAlignText(bonus_text, display.contentWidth)
+      transition.to(bonus_text, {alpha: 0, time: 500, onComplete: => self\removeSelf()})
+
+    game.score += (math.ceil(20 - time_for_gesture) + game.gestureBlock\weight()) * bonus
 
     -- make score big and grow back to normal size
     game.score_display.size = game.block_size + (game.score - game.running_score)
