@@ -25,7 +25,6 @@ gestureShape = (event) ->
   if not game.running
     return
   if event.phase == 'began'
-    game.gesturing = true
     analytics.newEvent("design", {event_id: 'gesturing:begin'})
     game.gestureBlock = Block({}) -- the block we draw
   --table.insert(game.gestureShapePoints, {event.x, event.y})
@@ -41,6 +40,9 @@ gestureShape = (event) ->
     -- nothing to do
     return true
 
+  if event.phase == 'began' -- we needed a block first
+    game.gesturing = true
+
   -- keep track of wether we can give a bonus for having the swiping all blocks of the colour
   if not game.gestureBlock.last_color_num
     game.gestureBlock.last_color_num = block.color_num
@@ -48,13 +50,11 @@ gestureShape = (event) ->
   if game.gestureBlock.color_bonus
     game.gestureBlock.color_bonus = game.gestureBlock.last_color_num == block.color_num
 
+  -- add to the shape we draw
   game.gestureBlock\set(block_x, block_y, 1)
   if scene.hint
     scene.hint\removeSelf()
 
-  -- add to the shape we draw
-  -- NOTE: this shape fits into the Field, for comparing with the
-  --       wanted block it needs to be normalized first
 
   if game.targetBlock and game.gestureBlock\isLike(game.targetBlock) then
     time_for_gesture = os.time() - game.last_target_time
@@ -69,6 +69,7 @@ gestureShape = (event) ->
       transition.to(bonus_text, {alpha: 0, time: 1000, onComplete: => self\removeSelf()})
 
     game.score += (math.ceil(20 - time_for_gesture) + game.gestureBlock\weight()) * bonus
+    game.gestureBlock = Block({})
 
     -- make score big and grow back to normal size
     game.score_display.size = game.block_size + (game.score - game.running_score)
