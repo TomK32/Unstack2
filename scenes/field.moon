@@ -93,7 +93,7 @@ scene.gameLoop = (event) ->
   if not game.running
     return
   if not game.time_remaining
-    game.time_remaining = event.time + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 30000
+    game.time_remaining = game.getTimeRemaining(event.time)
   if game.time_remaining < event.time
     scene.endLevel()
     return true

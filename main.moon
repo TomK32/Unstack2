@@ -28,7 +28,6 @@ export game = {
   level: 0,
   score: 0,
   running_score: 0, -- to increase the score with some easing
-  time_for_level: 1000 * 10
   width: math.floor(display.contentWidth / block_size)
   height: math.floor(display.contentHeight / block_size) - 4
 
@@ -38,6 +37,9 @@ export game = {
   targetBlock: nil,
   last_target_time: 0,
   sounds: require('sounds')
+
+  getTimeRemaining: (now) ->
+    return now + math.ceil(3 * math.sqrt(game.field\width() * game.field\height()) / 30) * 30000
 
   reset: ->
     game.running = true
