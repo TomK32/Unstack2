@@ -1,0 +1,18 @@
+
+
+settings = {
+  android =
+   {
+    versionCode = require('version'):gsub('%.', ''),
+    usesPermissions =
+    {
+     "android.permission.INTERNET"
+
+    },
+    usesFeatures =
+    {
+     { name = "android.hardware.location.network", required = false },
+     { name = "android.hardware.touchscreen", required = true}
+    },
+  },
+}
