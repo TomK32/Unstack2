@@ -167,7 +167,6 @@ export class Block
 
   move: (offset_x, offset_y) =>
     new_shape = {}
-    print(offset_y, offset_x)
     for y, row in pairs(@shape)
       new_shape[y + offset_y] = {}
       for x, tile in pairs(row)

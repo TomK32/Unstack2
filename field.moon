@@ -10,6 +10,12 @@ export class Field extends Block
     @createRects()
     return @
 
+  get: (x, y) =>
+    b = Block.get(self, x, y)
+    if not b or b.removed
+      return nil
+    return b
+
   blockToRect: (x,y) ->
     return {
       (x - 1) * game.block_size + 1,
@@ -17,7 +23,6 @@ export class Field extends Block
       game.block_size - 2,
       game.block_size - 2
     }
-
 
   removeSelf: =>
     for y, row in pairs(@shape)
@@ -69,11 +74,13 @@ export class Field extends Block
         if b ~= nil and b ~= false
           blocks_left += 1
     return blocks_left
+
   substract: (block) =>
     field = @
     for y, row in pairs(block.shape)
       for x, b in pairs(row)
         if @shape[y] and @shape[y][x]
+          @shape[y][x].removed = true
           transition.to(@shape[y][x], {
             time: 1000, alpha: 0,
             height: game.block_size * 2, width: game.block_size * 2,
