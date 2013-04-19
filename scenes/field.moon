@@ -123,13 +123,6 @@ scene.createGestureTrail = (x, y) ->
       time: 500, rotation: 90
       height: game.block_size / 4, width: game.block_size / 4,
     })
-    transition.to(rect, {
-      time: 2000, alpha: 0,
-      transition: easing.inExpo,
-      onComplete: =>
-        if @.removeSelf
-          @\removeSelf()
-    })
     game.gesture_group\insert(rect)
 
 scene.resetGestureTrail = ->
