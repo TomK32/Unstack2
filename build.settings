@@ -3,7 +3,7 @@
 settings = {
   android =
    {
-    versionCode = require('version'):gsub('%.', ''),
+    versionCode = "VERSION",
     usesPermissions =
     {
      "android.permission.INTERNET"
