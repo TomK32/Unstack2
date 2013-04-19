@@ -24,6 +24,8 @@ createTarget = () ->
 gestureShape = (event) ->
   if not game.running
     return
+  if event.phase == 'ended'
+    scene.resetGestureTrail()
   if event.phase == 'began'
     analytics.newEvent("design", {event_id: 'gesturing:begin'})
     game.gestureBlock = Block({}) -- the block we draw
@@ -83,9 +85,6 @@ gestureShape = (event) ->
     scene.needsHint = false
     game.sounds.play('shape_solved')
     game.gesturing = false
-  elseif event.phase == 'ended'
-    scene.errorGesturing(event)
-    return true
   return true
 
 scene.errorGesturing = (event) ->
