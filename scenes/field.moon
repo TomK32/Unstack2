@@ -13,13 +13,24 @@ leftAlignText = (text, x) ->
   text.x = x + text.width / 2 + game.block_size * 0.2
 
 
-createTarget = () ->
+scene.skipTarget = (event) ->
+  -- keep player from going berserk
+  if game.last_target_time + 1 > os.time()
+    return
+  game.score -= 20
+  game.sounds.play('shape_failed')
+  scene.createTarget()
+  return false
+
+scene.createTarget = () ->
   -- the block we need to mark
   if game.targetBlock
     game.targetBlock\removeSelf()
   gradient = graphics.newGradient({255,200,0}, {255, 255,0})
   game.targetBlock = Field(Block.random().shape, game.target_group, nil, {gradient})
   game.last_target_time = os.time()
+  timer.performWithDelay 1000, -> game.target_group\addEventListener("tap", scene.skipTarget )
+
 
 gestureShape = (event) ->
   if not game.running
@@ -81,7 +92,7 @@ gestureShape = (event) ->
     game.score_display.size = game.block_size + (game.score - game.running_score)
     transition.to(game.score_display, { size: game.block_size})
 
-    createTarget()
+    scene.createTarget()
     scene.needsHint = false
     game.sounds.play('shape_solved')
     game.gesturing = false
@@ -231,6 +242,7 @@ scene.createScene = (event) =>
   group.y = 4 * game.block_size
 
   -- setup playing field
+  -- needs a background so we get touch events when entering empty space
   @error_background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
   @error_background\setFillColor(255,0,0,0)
   group\insert(@error_background)
@@ -241,6 +253,11 @@ scene.createScene = (event) =>
   game.target_group = display.newGroup()
   game.target_group.y = game.block_size / 2
   game.target_group.x = game.block_size / 2
+
+  -- needs a background to have a decent tap area
+  background = display.newRect(0, 0, game.block_size * 3, game.block_size * 3)
+  background\setFillColor(0,0,0,1)
+  game.target_group\insert(background)
 
   game.level_display = display.newText('lvl ' .. game.level, 0, game.block_size * 2, native.systemFontBold, game.block_size)
   rightAlignText(game.level_display, display.contentWidth)
@@ -274,7 +291,7 @@ scene.enterScene = (event) =>
   game.field = Field.random(@field_group, game.level, game.width, game.height)
   game.field.target = game.target_group
 
-  createTarget()
+  scene.createTarget()
   timer.performWithDelay 1, -> Runtime\addEventListener("enterFrame", scene.gameLoop)
   timer.performWithDelay 3000, scene.giveHint
 
