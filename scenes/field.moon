@@ -25,8 +25,8 @@ gestureShape = (event) ->
   if not game.running
     return
   if event.phase == 'began'
+    game.gesturing = true
     analytics.newEvent("design", {event_id: 'gesturing:begin'})
-    game.gestureShapePoints = {} -- takes {x, y} pixel coords
     game.gestureBlock = Block({}) -- the block we draw
   --table.insert(game.gestureShapePoints, {event.x, event.y})
   x = event.x - game.field.group.x
@@ -35,7 +35,7 @@ gestureShape = (event) ->
   block_y = math.ceil(y / game.block_size)
   block = game.field\get(block_x, block_y)
   if not block
-    game.gestureBlock = Block({})
+    scene.errorGesturing(event)
     return true
   elseif game.gestureBlock\get(block_x, block_y)
     -- nothing to do
@@ -77,10 +77,26 @@ gestureShape = (event) ->
     createTarget()
     scene.needsHint = false
     game.sounds.play('shape_solved')
+    game.gesturing = false
   elseif event.phase == 'ended'
-    game.sounds.play('shape_failed')
-    analytics.newEvent("design", {event_id: "gesturing:failed", area: 'lvl' .. game.level})
+    scene.errorGesturing(event)
+    return true
   return true
+
+scene.errorGesturing = (event) ->
+  game.gestureBlock = Block({})
+  if not game.gesturing or (game.last_gesture_error and game.last_gesture_error + 1000 > event.time)
+    return false
+  game.last_gesture_error = event.time
+  scene.error_background\setFillColor(255,0,0,255)
+  transition.to(scene.error_background, {time: 500, alpha: 0,
+    onComplete: ->
+      scene.error_background.alpha = 1.0
+      scene.error_background\setFillColor(255,0,0,0)
+
+  })
+  analytics.newEvent("design", {event_id: "gesturing:failed", area: 'lvl' .. game.level})
+  game.sounds.play('shape_failed')
 
 
 scene.updateTimerDisplay = (event) ->
@@ -187,6 +203,9 @@ scene.createScene = (event) =>
   group.y = 4 * game.block_size
 
   -- setup playing field
+  @error_background = display.newRect(0, 0, display.contentWidth, display.contentHeight)
+  @error_background\setFillColor(255,0,0,0)
+  group\insert(@error_background)
   group\addEventListener( "touch", gestureShape )
 
   group.x = (display.contentWidth - game.width * game.block_size) / 2

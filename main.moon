@@ -2,6 +2,7 @@
 -- Unstack2 main.lua
 
 require ("lib.game_analytics")
+require 'block'
 GameAnalytics.newEventWithoutDelay = GameAnalytics.newEvent
 GameAnalytics.newEvent = (category, ...) ->
   opts = ...
@@ -16,8 +17,6 @@ analytics.init(require('conf.analytics'))
 
 -- log events
 analytics.newEvent("design", {event_id: "loading"})
-
-require 'field'
 
 block_size = math.floor(display.contentWidth / 10 / 8) * 8
 export game = {

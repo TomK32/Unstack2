@@ -4,6 +4,7 @@
 
 scene = storyboard.newScene('Menu')
 widget = require "widget"
+require 'field'
 
 doBackgroundBlocks = true
 background_group = display.newGroup()
