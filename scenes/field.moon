@@ -4,7 +4,7 @@
 
 scene = storyboard.newScene('Field')
 widget = require "widget"
-
+require 'hit_block'
 
 rightAlignText = (text, x) ->
   text.x = x - text.width / 2 - game.block_size * 0.2
@@ -41,6 +41,7 @@ gestureShape = (event) ->
     -- nothing to do
     return true
   game.gestureBlock\set(block_x, block_y, 1)
+  scene.hint\removeSelf()
 
   -- add to the shape we draw
   -- NOTE: this shape fits into the Field, for comparing with the
@@ -52,6 +53,7 @@ gestureShape = (event) ->
     game.field\substract(game.gestureBlock)
     game.score += math.ceil(20 - (time_for_gesture)/1000)
     createTarget()
+    scene.needsHint = false
     game.sounds.play('shape_solved')
   elseif event.phase == 'ended'
     game.sounds.play('shape_failed')
@@ -111,7 +113,6 @@ scene.endLevel = () ->
   end_level_dialog\insert(background)
   y += game.block_size * 2
 
-  print(game.score, game.score_level_start)
   score_text = "You scored " .. math.floor(game.score - game.score_level_start)
   score_text = display.newText(score_text, 0, y, native.systemFontBold, 16)
   score_text.x = x
@@ -146,6 +147,13 @@ scene.endLevel = () ->
   end_level_dialog\insert(menu_button)
   scene.view.end_level_dialog = end_level_dialog
   scene.view\insert(end_level_dialog)
+
+scene.giveHint = =>
+  return if not scene.needsHint
+  scene.hint = display.newGroup()
+  scene.field_group\insert(scene.hint)
+  hintBlock = HintBlock(game.targetBlock\normalize(), scene.hint, game.field)
+  timer.performWithDelay 3000, => scene.hint\removeSelf()
 
 
 -- Called when the scene's view does not exist:
@@ -186,6 +194,10 @@ scene.createScene = (event) =>
   @view
 
 scene.enterScene = (event) =>
+  scene.needsHint = true
+  if scene.hint
+    scene.hint\removeSelf()
+
   game.reset()
   game.level += 1
   if @view.end_level_dialog
@@ -200,6 +212,7 @@ scene.enterScene = (event) =>
 
   createTarget()
   timer.performWithDelay 1, -> Runtime\addEventListener("enterFrame", scene.gameLoop)
+  timer.performWithDelay 3000, scene.giveHint
 
 scene.exitScene = () =>
   Runtime\removeEventListener("enterFrame", scene.gameLoop)

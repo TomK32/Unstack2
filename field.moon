@@ -28,15 +28,19 @@ export class Field extends Block
   createRects: =>
     for y, row in pairs(@shape)
       for x, block in pairs(row)
-        if block == 1
-          color = @colors[math.ceil(#@colors * math.random())]
-          @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
-          @shape[y][x]\setFillColor(color)
-          @shape[y][x].blendMode = 'add'
-          trans_x = math.random() * x * 2 * game.block_size
-          trans_y = math.random() * y * 2 * game.block_size
-          transition.from(@shape[y][x], {time: 500, alpha: 0, width: game.block_size * 20, y: trans_y, x: trans_x})
-          @group\insert(@shape[y][x])
+        if block
+          @\createRect(x, y, block)
+
+  createRect: (x, y, block) =>
+    color = @colors[math.ceil(#@colors * math.random())]
+    @shape[y][x] = display.newRect(unpack(Field.blockToRect(x,y)))
+    @shape[y][x]\setFillColor(color)
+    @shape[y][x].blendMode = 'add'
+    trans_x = math.random() * x * 2 * game.block_size
+    trans_y = math.random() * y * 2 * game.block_size
+    transition.from(@shape[y][x], {time: 500, alpha: 0, width: game.block_size * 20, y: trans_y, x: trans_x})
+    @group\insert(@shape[y][x])
+    return @shape[y][x]
 
   random: (group, level, height, width) ->
     empty_tiles = math.min(math.max(level - 1, math.floor(level/(height + width))), (width + height) / 2)
