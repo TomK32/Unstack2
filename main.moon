@@ -1,16 +1,6 @@
 --
 -- Unstack2 main.lua
 
-licensing = require "licensing"
-licensing.init( "google" )
-
-licensingListener = ( event ) ->
-  verified = event.isVerified
-  if not event.isVerified
-    print("Pirates!!!")
-
-licensing.verify( licensingListener )
-
 require ("lib.game_analytics")
 GameAnalytics.newEventWithoutDelay = GameAnalytics.newEvent
 GameAnalytics.newEvent = (category, ...) ->
