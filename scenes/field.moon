@@ -66,7 +66,7 @@ gestureShape = (event) ->
       bonus_text = display.newText("2x bonus", 0, game.block_size, native.systemFontBold, 16)
       scene.view\insert(bonus_text)
       rightAlignText(bonus_text, display.contentWidth)
-      transition.to(bonus_text, {alpha: 0, time: 500, onComplete: => self\removeSelf()})
+      transition.to(bonus_text, {alpha: 0, time: 1000, onComplete: => self\removeSelf()})
 
     game.score += (math.ceil(20 - time_for_gesture) + game.gestureBlock\weight()) * bonus
 
