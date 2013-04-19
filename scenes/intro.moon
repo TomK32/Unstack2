@@ -7,7 +7,8 @@ widget = require "widget"
 local title
 
 gotoMainMenu = (event) ->
-  storyboard.gotoScene("scenes.menu", "fade", 50)
+  if string.find(storyboard.getCurrentSceneName(), 'intro')
+    storyboard.gotoScene("scenes.menu", "fade", 50)
 
   return true
 

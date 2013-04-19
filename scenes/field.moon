@@ -41,7 +41,8 @@ gestureShape = (event) ->
     -- nothing to do
     return true
   game.gestureBlock\set(block_x, block_y, 1)
-  scene.hint\removeSelf()
+  if scene.hint
+    scene.hint\removeSelf()
 
   -- add to the shape we draw
   -- NOTE: this shape fits into the Field, for comparing with the

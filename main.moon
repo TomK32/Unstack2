@@ -47,7 +47,6 @@ export game = {
     game.last_target_time = nil
 }
 
-game.sounds.play('music')
 display.setStatusBar( display.HiddenStatusBar )
 
 export storyboard = require "storyboard"
