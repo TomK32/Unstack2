@@ -32,6 +32,7 @@ scene.enterScene = (event) =>
   play_button = widget.newButton({
     label: "Play Now",
     labelColor: { default: {0}, over: {0} },
+    top: display.contentHeight * 0.5,
     onRelease: ->
       storyboard.gotoScene("scenes.field", "fade", 50)
       analytics.newEvent("design", {event_id: "menu:play"})
@@ -40,7 +41,14 @@ scene.enterScene = (event) =>
 
   play_button\setReferencePoint(display.CenterReferencePoint)
   play_button.x = display.contentWidth * 0.5
-  play_button.y = display.contentHeight * 0.7
+
+  games_button = widget.newButton({
+    label: 'More games',
+    top: play_button.y + play_button.height,
+    onRelease: ->
+      system.openURL( 'http://ananasblau.com/games?utm_source=unstack2&utm_medium=android&utm_term=main+menu&utm_campaign=games' )
+  })
+  games_button.x = play_button.x
 
   @view\insert(play_button)
 
