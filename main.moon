@@ -1,8 +1,10 @@
 --
 -- Unstack2 main.lua
 
-require ("lib.game_analytics")
+require 'lib.game_analytics'
 require 'block'
+require 'highscores'
+
 GameAnalytics.newEventWithoutDelay = GameAnalytics.newEvent
 GameAnalytics.newEvent = (category, ...) ->
   opts = ...
@@ -30,6 +32,7 @@ export game = {
   width: math.floor(display.contentWidth / block_size)
   height: math.floor(display.contentHeight / block_size) - 4
 
+  highscores: Highscores()
 
   field: nil,
   gestureBlock: Block({}),

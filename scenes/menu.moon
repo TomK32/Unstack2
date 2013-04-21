@@ -32,7 +32,7 @@ scene.enterScene = (event) =>
   play_button = widget.newButton({
     label: "Play Now",
     labelColor: { default: {0}, over: {0} },
-    top: display.contentHeight * 0.5,
+    top: display.contentHeight * 0.4,
     onRelease: ->
       storyboard.gotoScene("scenes.field", "fade", 50)
       analytics.newEvent("design", {event_id: "menu:play"})
@@ -46,10 +46,23 @@ scene.enterScene = (event) =>
     label: 'More games',
     top: play_button.y + play_button.height,
     onRelease: ->
+      analytics.newEvent("design", {event_id: "menu:visit_more_games"})
       system.openURL( 'http://ananasblau.com/games?utm_source=unstack2&utm_medium=android&utm_term=main+menu&utm_campaign=games' )
   })
   games_button.x = play_button.x
 
+  highscores_button = widget.newButton({
+    label: 'Highscores',
+    top: games_button.y + games_button.height,
+    onRelease: ->
+      storyboard.gotoScene("scenes.highscores", "fade", 50)
+      analytics.newEvent("design", {event_id: "menu:highscores"})
+      return true
+  })
+  highscores_button.x = play_button.x
+
+  @view\insert(highscores_button)
+  @view\insert(games_button)
   @view\insert(play_button)
 
 scene.exitScene = (event) ->

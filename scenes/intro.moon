@@ -53,4 +53,3 @@ scene\addEventListener( "exitScene", scene )
 scene\addEventListener( "createScene", scene )
 
 return scene
--- storyboard.gotoScene("scenes.field")

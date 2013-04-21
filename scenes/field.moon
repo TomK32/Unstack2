@@ -186,7 +186,7 @@ scene.endLevel = () ->
   background = display.newRect(game.block_size * 1.5, y, display.contentWidth - game.block_size * 3, display.contentHeight - game.block_size * 5)
   background\setFillColor(0,0,0,200)
   end_level_dialog\insert(background)
-  y += game.block_size * 2
+  y += game.block_size
 
   score_text = "You scored " .. math.floor(game.score - game.score_level_start)
   score_text = display.newText(score_text, 0, y, native.systemFontBold, 16)
@@ -194,6 +194,8 @@ scene.endLevel = () ->
   end_level_dialog\insert(score_text)
 
   y += score_text.height + game.block_size
+
+  game.highscores\insert({score: game.score - game.score_level_start, date: os.date('%F'), level: game.level})
 
   next_button = widget.newButton({
     label: "Next Level",
@@ -206,7 +208,7 @@ scene.endLevel = () ->
   next_button.x = x
   next_button.y = y
   end_level_dialog\insert(next_button)
-  y += next_button.height * 2
+  y += next_button.height + game.block_size
 
   menu_button = widget.newButton({
     label: "Go To Menu",
