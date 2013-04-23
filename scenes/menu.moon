@@ -27,7 +27,14 @@ scene.enterScene = (event) =>
 
   @view\insert(scene.background_group)
   @backgroundBlocks(scene.background_group)
-  y = display.contentHeight * 0.4
+  y = game.block_size * 2
+
+  title = display.newText("Unstack 2", 0, y, native.systemFontBold, game.block_size * 1.5)
+  title.x = display.contentWidth / 2
+  @view\insert(title)
+
+  y += title.height * 1.9
+
   play_button = widget.newButton({
     label: "Play Now",
     labelColor: { default: {0}, over: {0} },
@@ -72,6 +79,12 @@ scene.enterScene = (event) =>
       return true
   })
   howto_button.x = play_button.x
+  y += howto_button.height * 1.2
+
+  author = display.newText("(C) 2013 Ananasblau Games", 0, y, native.systemFontBold, game.block_size / 2)
+  author.x = display.contentWidth / 2
+  @view\insert(author)
+
 
   @view\insert(howto_button)
   @view\insert(highscores_button)
