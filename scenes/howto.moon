@@ -29,19 +29,19 @@ scene.createScene = (event) =>
   font_size = math.floor(math.max(10, line_height / 2))
 
   y = @\printLine('HowTo', x * 1.4, y, width, font_size * 1.6)
-  y = @\printLine('The yellow shape is what you must swipe on the large field.', x, y, width, font_size)
+  y = @\printLine('The yellow shape is what you must draw on the large field.', x, y, width, font_size)
   y = @\printLine('In the middle you see your score and the time remaining', x, y, width, font_size)
 
-  howto_header = display.newImage('images/howto-header.png', 0, y)
+  howto_header = display.newImage(@view, 'images/howto-header.png', 0, y)
   y += howto_header.height
 
   y = @\printLine('Start with any block, swipe the shape and lift your finger.', x, y, width, font_size)
 
-  howto_swipe = display.newImage('images/howto-swipe.png', 0, y)
+  howto_swipe = display.newImage(@view, 'images/howto-swipe.png', 0, y)
   howto_swipe.height = 0
   y += howto_swipe.height + game.block_size / 2
 
-  y = @\printLine("Colours don't matter but give you a nice bonus.", x, y, width, font_size)
+  y = @\printLine("Colours or orientation don't matter but give you bonuses.", x, y, width, font_size)
 
   @view\addEventListener("touch", gotoMainMenu)
   @view\addEventListener("tap", gotoMainMenu)

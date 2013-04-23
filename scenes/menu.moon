@@ -6,11 +6,10 @@ scene = storyboard.newScene('Menu')
 widget = require "widget"
 require 'field'
 
-doBackgroundBlocks = true
 last_background_blocks = 0
 
-backgroundBlocks = (group) ->
-  if not doBackgroundBlocks or (last_background_blocks and last_background_blocks + 2 > os.time())
+scene.backgroundBlocks = (group) =>
+  if not group.insert or not @doBackgroundBlocks or (last_background_blocks and last_background_blocks + 2 > os.time())
     return false
   last_background_blocks = os.time()
   w = math.floor(display.contentWidth / game.block_size)
@@ -18,16 +17,16 @@ backgroundBlocks = (group) ->
   if group.field
     group.field\removeSelf()
   group.field = Field.random(group, 50, w, h)
-  timer.performWithDelay 3000, -> backgroundBlocks(group)
+  @timer = timer.performWithDelay 3000, -> @backgroundBlocks(group)
 
 -- Called when the scene's view does not exist:
 
 scene.enterScene = (event) =>
   scene.background_group = display.newGroup()
-  doBackgroundBlocks = true
-  backgroundBlocks(scene.background_group)
+  @doBackgroundBlocks = true
 
   @view\insert(scene.background_group)
+  @backgroundBlocks(scene.background_group)
   y = display.contentHeight * 0.4
   play_button = widget.newButton({
     label: "Play Now",
@@ -79,8 +78,10 @@ scene.enterScene = (event) =>
   @view\insert(games_button)
   @view\insert(play_button)
 
-scene.exitScene = (event) ->
-  doBackgroundBlocks = false
+scene.exitScene = (event) =>
+  @doBackgroundBlocks = false
+  if @timer
+    timer.cancel(@timer)
 
 scene\addEventListener( "createScene", scene )
 scene\addEventListener( "enterScene", scene )

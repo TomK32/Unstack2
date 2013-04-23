@@ -8,11 +8,15 @@ export class Highscores
 
   new: =>
     @highscores = {}
+    @total_games = 0
+    @total_score = 0
     @readLocalHighscores()
     return @
 
   insert: (score) =>
     table.insert(@highscores, score)
+    @total_games += 1
+    @total_score += score.score
     @tidyHighscores()
     @saveLocalHighscores()
 
@@ -40,11 +44,20 @@ export class Highscores
     block(self, file)
     io.close(file)
 
+  fileContent: =>
+    {
+      highscores: @highscores,
+      total_score: @total_score,
+      total_games: @total_games
+    }
   saveLocalHighscores: =>
-    file = @highscoresFile 'w', (file) => file\write( json.encode(@highscores) )
+    file = @highscoresFile 'w', (file) => file\write( json.encode(@fileContent()) )
 
   readLocalHighscores: =>
-    file = @highscoresFile 'r', (file) => @highscores = json.decode( file\read("*a") )
-    if not @highscores
+    file = @highscoresFile 'r', (file) => @content = json.decode( file\read("*a") )
+    if not @content
       @highscores = {}
+      return
+    for k,v in pairs(@content)
+      @[k] = v
 
