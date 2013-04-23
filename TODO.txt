@@ -11,10 +11,15 @@ X won't do
 * 4 end level if nothing left to solve
 * √ (2) local highscores
 * 4 online highscores
-* 2 help screen
+* √ (2) help screen
 * √ (2 => 4) show hint (make it an extra block)
 * √ (2 => 1) particle effect when drawing
 * √ (4 => 1) rainbow when solving a shape
 * X loop music
 * 8 mix custom music based on the blocks remove
+
+gamemodes / extras:
+* unlocked by achieving a certain score. score -> $$$ ?
+* shootout: you get a 1x1, 2x2 or 3x3 gun to takeout blocks regardless of empty blocks
+* ...
 

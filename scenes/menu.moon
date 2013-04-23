@@ -28,11 +28,11 @@ scene.enterScene = (event) =>
   backgroundBlocks(scene.background_group)
 
   @view\insert(scene.background_group)
-
+  y = display.contentHeight * 0.4
   play_button = widget.newButton({
     label: "Play Now",
     labelColor: { default: {0}, over: {0} },
-    top: display.contentHeight * 0.4,
+    top: y,
     onRelease: ->
       storyboard.gotoScene("scenes.field", "fade", 50)
       analytics.newEvent("design", {event_id: "menu:play"})
@@ -41,26 +41,40 @@ scene.enterScene = (event) =>
 
   play_button\setReferencePoint(display.CenterReferencePoint)
   play_button.x = display.contentWidth * 0.5
+  y += play_button.height * 1.2
 
   games_button = widget.newButton({
     label: 'More games',
-    top: play_button.y + play_button.height,
+    top: y,
     onRelease: ->
       analytics.newEvent("design", {event_id: "menu:visit_more_games"})
       system.openURL( 'http://ananasblau.com/games?utm_source=unstack2&utm_medium=android&utm_term=main+menu&utm_campaign=games' )
   })
   games_button.x = play_button.x
+  y += games_button.height * 1.2
 
   highscores_button = widget.newButton({
     label: 'Highscores',
-    top: games_button.y + games_button.height,
+    top: y,
     onRelease: ->
       storyboard.gotoScene("scenes.highscores", "fade", 50)
       analytics.newEvent("design", {event_id: "menu:highscores"})
       return true
   })
   highscores_button.x = play_button.x
+  y += highscores_button.height * 1.2
 
+  howto_button = widget.newButton({
+    label: 'Howto play',
+    top: y,
+    onRelease: ->
+      storyboard.gotoScene("scenes.howto", "fade", "50")
+      analytics.newEvent("design", { event_id: "menu:howto"})
+      return true
+  })
+  howto_button.x = play_button.x
+
+  @view\insert(howto_button)
   @view\insert(highscores_button)
   @view\insert(games_button)
   @view\insert(play_button)

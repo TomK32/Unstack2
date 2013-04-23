@@ -18,7 +18,7 @@ scene.createScene = (event) =>
   y = math.ceil(display.contentHeight / 20)
   line_height = math.floor(display.contentHeight / 16)
   font_size = math.floor(math.max(10, line_height / 2))
-  line = display.newText('Highscores', x * 1.2, y, native.systemFontBold, font_size * 1.2)
+  line = display.newText('Highscores', x * 1.2, y, native.systemFontBold, font_size * 1.6)
   line\setReferencePoint(display.TopRightReferencePoint)
   @view\insert line
   game.highscores\tidyHighscores()
