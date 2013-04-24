@@ -178,7 +178,6 @@ scene.removeBlockAnimation = (field, x, y) ->
     y: 2 * -game.block_size,
     onComplete: ->
       timer.performWithDelay 1000, ->
-        print(field)
         b = field\get(x,y)
         if b and b.removeSelf
           b\removeSelf()

@@ -39,7 +39,7 @@ tapField = (event) ->
 
   game.field\substractBlock(block_x, block_y)
   analytics.newEvent("design", {event_id: "shooting:success", area: game.lvlString(), value: time_remaining})
-  scene.createShot(block_x, block_y)
+  scene.createShot(block_x, block_y, block)
 
   game.score -= scene.gun.cost_per_shot
   scene.gun.shots -= 1
@@ -51,23 +51,25 @@ tapField = (event) ->
   game.sounds.play('shot_success')
   return true
 
-scene.createShot = (x, y) ->
-  for i, coord in pairs({{2,2},{-2,2},{1,1},{1,-1},{-1,1},{-1,-1}}) do
+scene.createShot = (x, y, block) ->
+  color = Field.colors[block.color_num]
+  yellow_color = graphics.newGradient({255,200,0}, {255, 255,0})
+
+  for i, coord in pairs({{1,1},{1,-1},{-1,1},{-1,-1}}) do
+    seed = (game.block_size * math.random())
     rect = display.newRect(unpack(Field.blockToRect(x,y)))
     --rect.blendMode = 'add'
-    seed = (game.block_size * math.random())
-    c = math.ceil(255 - 80 * math.random())
-    rect.blendMode = 'add'
-    rect\setFillColor(c, c / 6 * i,c/8,255)
+    if math.random() > 0.5
+      rect\setFillColor(color)
+    else
+      rect\setFillColor(yellow_color)
     transition.to(rect, {
-      time: 500, rotation: 270 - 90 *  (2 - i),
+      time: 500,
       height: game.block_size / 4, width: game.block_size / 4,
       x: (x - 0.5) * game.block_size + seed * coord[1],
-      y: (y - 0.5) * game.block_size + seed * coord[2],
-      onComplete: =>
-        if @removeSelf
-          @\removeSelf()
+      y: (y - 0.5) * game.block_size + seed * coord[2]
     })
+    transition.to(rect, { time: 20000, alpha: 0 })
     scene.shots_group\insert(rect)
 
 scene.updateTimerDisplay = (event) ->
