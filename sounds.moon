@@ -9,6 +9,13 @@ sounds.shape_solved = {
   audio.loadSound('sounds/shape_solved2.mp3'),
   audio.loadSound('sounds/shape_solved3.mp3')
 }
+sounds.shot = {
+  audio.loadSound('sounds/shot.mp3')
+}
+sounds.explosion = {
+  audio.loadSound('sounds/explosion.mp3')
+}
+
 sounds.play = (file) ->
   file = sounds[file]
   if type(file) == 'table'
