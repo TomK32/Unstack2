@@ -74,7 +74,7 @@ gestureShape = (event) ->
 
 
   if game.targetBlock and game.gestureBlock\isLike(game.targetBlock) then
-    game.field\substract(game.gestureBlock)
+    game.field\substract(game.gestureBlock, scene.removeBlockAnimation)
     time_for_gesture = os.time() - game.last_target_time
     analytics.newEvent("design", {event_id: "gesturing:success", area: game.lvlString(), value: time_remaining})
     bonus = 1
@@ -169,10 +169,30 @@ scene.gameLoop = (event) ->
   scene.updateScoreDisplay(event)
   scene.updateTimerDisplay(event)
 
+scene.removeBlockAnimation = (field, x, y) ->
+  transition.to(field.shape[y][x], {
+    time: 1000, alpha: 0,
+    height: game.block_size * 2, width: game.block_size * 2,
+    rotation: 20 - math.random() * 40,
+    x: game.block_size * 5,
+    y: 2 * -game.block_size,
+    onComplete: ->
+      timer.performWithDelay 1000, ->
+        print(field)
+        b = field\get(x,y)
+        if b and b.removeSelf
+          b\removeSelf()
+        field\set(x, y, nil)
+  })
+
 scene.endLevel = () ->
   blocks_left = game.field\blocksLeft()
   game.score -= math.floor(math.sqrt(blocks_left))
   game.score += game.level
+  -- cleared the field: bonus
+  if blocks_left == 0
+    game.score += game.field.width * game.field.height
+
   game.running_score = game.score
   Runtime\removeEventListener("enterFrame", gameLoop)
   scene.updateScoreDisplay()
@@ -194,6 +214,15 @@ scene.endLevel = () ->
   end_level_dialog\insert(score_text)
   y += score_text.height + game.block_size
 
+  if false and not game.player.name
+    -- ask for name
+    name_input = native.newTextField(display.contentHeight * 0.1, y, display.contentWidth * 0.7, game.block_size)
+    name_input.userInput = (event) ->
+      if event.text == ''
+        return
+    y += name_input.height + game.block_size
+    end_level_dialog\insert(name_input)
+
   game.highscores\insert({score: game.score - game.score_level_start, date: os.date('%F'), level: game.level})
 
   next_button = widget.newButton({
@@ -209,19 +238,19 @@ scene.endLevel = () ->
   end_level_dialog\insert(next_button)
   y += next_button.height + game.block_size
 
-  next_button = widget.newButton({
-    label: "Shootout!",
-    labelColor: { default: {0}, over: {0} },
-    top: y,
-    onRelease: (event) ->
-      storyboard.purgeScene()
-      storyboard.gotoScene("scenes.shootout")
-      return true
-  })
-  next_button.x = x
-  end_level_dialog\insert(next_button)
-  y += next_button.height + game.block_size
-
+  if blocks_left > 0
+    next_button = widget.newButton({
+      label: "Shootout!",
+      labelColor: { default: {0}, over: {0} },
+      top: y,
+      onRelease: (event) ->
+        storyboard.purgeScene()
+        storyboard.gotoScene("scenes.shootout")
+        return true
+    })
+    next_button.x = x
+    end_level_dialog\insert(next_button)
+    y += next_button.height + game.block_size
 
   menu_button = widget.newButton({
     label: "Go To Menu",

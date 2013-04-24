@@ -5,10 +5,12 @@
 scene = storyboard.newScene('Shootout')
 widget = require "widget"
 
-scene.gun = {
-  fire_frequence: 200,
-  shots: 200
-}
+scene.resetGun = () =>
+  @gun = {
+    fire_frequence: 200,
+    shots: 50,
+    cost_per_shot: 3
+  }
 
 rightAlignText = (text, x) ->
   text.x = x - text.width / 2 - game.block_size * 0.2
@@ -19,6 +21,9 @@ leftAlignText = (text, x) ->
 tapField = (event) ->
   if scene.last_shot and scene.last_shot + scene.gun.fire_frequence > event.time
     return
+  if game.field\cleared()
+    scene.endLevel(event)
+
   scene.last_shot = event.time
   game.sounds.play('shot')
   x = event.x - game.field.group.x
@@ -36,7 +41,8 @@ tapField = (event) ->
   analytics.newEvent("design", {event_id: "shooting:success", area: game.lvlString(), value: time_remaining})
   scene.createShot(block_x, block_y)
 
-  game.score -= 10
+  game.score -= scene.gun.cost_per_shot
+  scene.gun.shots -= 1
 
   -- make score big and grow back to normal size
   game.score_display.size = game.block_size + (game.score - game.running_score)
@@ -46,14 +52,21 @@ tapField = (event) ->
   return true
 
 scene.createShot = (x, y) ->
-  for i = 1, 1 do
+  for i, coord in pairs({{2,2},{-2,2},{1,1},{1,-1},{-1,1},{-1,-1}}) do
     rect = display.newRect(unpack(Field.blockToRect(x,y)))
     --rect.blendMode = 'add'
-    rect\setFillColor(255,255,255,200)
+    seed = (game.block_size * math.random())
+    c = math.ceil(255 - 80 * math.random())
+    rect.blendMode = 'add'
+    rect\setFillColor(c, c / 6 * i,c/8,255)
     transition.to(rect, {
-      time: 500, rotation: 90
+      time: 500, rotation: 270 - 90 *  (2 - i),
       height: game.block_size / 4, width: game.block_size / 4,
-      onComplete: => @\removeSelf()
+      x: (x - 0.5) * game.block_size + seed * coord[1],
+      y: (y - 0.5) * game.block_size + seed * coord[2],
+      onComplete: =>
+        if @removeSelf
+          @\removeSelf()
     })
     scene.shots_group\insert(rect)
 
@@ -90,18 +103,20 @@ scene.gameLoop = (event) ->
   if not game.time_remaining
     game.time_remaining = game.getTimeRemaining(event.time)
   if game.score <= 0 or scene.gun.shots <= 0
-    scene.endLevel()
+    scene.endLevel(event)
     return true
   if game.time_remaining < event.time
-    scene.endLevel()
+    scene.endLevel(event)
     return true
   scene.updateScoreDisplay(event)
   scene.updateTimerDisplay(event)
 
-scene.endLevel = () ->
+scene.endLevel = (event) ->
   blocks_left = game.field\blocksLeft()
   game.score -= math.floor(math.sqrt(blocks_left))
   game.score += game.level
+  if game.time_remaining > event.time
+    game.score += (game.time_remaining + event.time) / 1000 * 20
   game.running_score = game.score
   Runtime\removeEventListener("enterFrame", gameLoop)
   scene.updateScoreDisplay()
@@ -164,7 +179,6 @@ scene.endLevel = () ->
   scene.view.end_level_dialog = end_level_dialog
   scene.view\insert(end_level_dialog)
 
-
 -- Called when the scene's view does not exist:
 scene.createScene = (event) =>
   -- view size will take full width but leave a few block on the top
@@ -173,7 +187,8 @@ scene.createScene = (event) =>
   @view\insert(group)
   group.y = 4 * game.block_size
 
-  @shots_group = display.newGroup(@view)
+  @shots_group = display.newGroup()
+  @field_group\insert(@shots_group)
   
   -- setup playing field
   -- needs a background so we get touch events when entering empty space
@@ -204,6 +219,7 @@ scene.createScene = (event) =>
 
 scene.enterScene = (event) =>
   game.reset()
+  @resetGun()
   game.level += 1
   if @view.end_level_dialog
     @view.end_level_dialog\removeSelf()

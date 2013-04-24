@@ -16,12 +16,13 @@ export class Field extends Block
       return nil
     return b
 
-  blockToRect: (x,y) ->
+  blockToRect: (x,y, block_size) ->
+    block_size = block_size or game.block_size
     return {
-      (x - 1) * game.block_size + 1,
-      (y - 1) * game.block_size + 1,
-      game.block_size - 2,
-      game.block_size - 2
+      (x - 1) * block_size + 1,
+      (y - 1) * block_size + 1,
+      block_size - 2,
+      block_size - 2
     }
 
   removeSelf: =>
@@ -75,26 +76,20 @@ export class Field extends Block
           blocks_left += 1
     return blocks_left
 
-  substract: (block) =>
+  cleared: () =>
+    return @blocksLeft() == 0
+
+  substract: (block, callback) =>
     field = @
     for y, row in pairs(block.shape)
       for x, b in pairs(row)
-        @substractBlock(x, y)
+        @substractBlock(x, y, callback)
 
-  substractBlock: (x, y) =>
+  substractBlock: (x, y, callback) =>
     if @shape[y] and @shape[y][x]
       @shape[y][x].removed = true
-      transition.to(@shape[y][x], {
-        time: 1000, alpha: 0,
-        height: game.block_size * 2, width: game.block_size * 2,
-        rotation: 20 - math.random() * 40,
-        x: game.block_size * 5,
-        y: 2 * -game.block_size,
-        onComplete: ->
-          timer.performWithDelay 1000, ->
-            b = @\get(x,y)
-            if b and b.removeSelf
-              b\removeSelf()
-            @\set(x, y, nil)
-      })
+      if callback
+        callback(@, x, y)
+      elseif @shape[y][x].removeSelf
+        @shape[y][x]\removeSelf()
 
