@@ -35,7 +35,7 @@ scene.createScene = (event) =>
     y = @\printLine(game.highscores.total_score .. ' total score', x, y, width, font_size)
 
   for i, score in ipairs(game.highscores.highscores)
-    text = score.score .. ' (lvl ' .. score.level .. ') .. ' .. score.date
+    text = math.floor(score.score) .. ' (lvl ' .. score.level .. ') .. ' .. score.date
     y = @\printLine(text, x, y, width, font_size)
 
   @view\addEventListener("touch", gotoMainMenu)

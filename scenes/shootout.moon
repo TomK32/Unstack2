@@ -20,12 +20,15 @@ leftAlignText = (text, x) ->
 
 tapField = (event) ->
   if scene.last_shot and scene.last_shot + scene.gun.fire_frequence > event.time
-    return
-  if game.field\cleared()
-    scene.endLevel(event)
+    return true
+  if not game.running
+    return true
 
   scene.last_shot = event.time
   game.sounds.play('shot')
+  game.score -= scene.gun.cost_per_shot
+  scene.gun.shots -= 1
+
   x = event.x - game.field.group.x
   y = event.y - game.field.group.y
   block_x = math.ceil(x / game.block_size)
@@ -41,14 +44,14 @@ tapField = (event) ->
   analytics.newEvent("design", {event_id: "shooting:success", area: game.lvlString(), value: time_remaining})
   scene.createShot(block_x, block_y, block)
 
-  game.score -= scene.gun.cost_per_shot
-  scene.gun.shots -= 1
-
   -- make score big and grow back to normal size
   game.score_display.size = game.block_size + (game.score - game.running_score)
   transition.to(game.score_display, { size: game.block_size})
 
   game.sounds.play('shot_success')
+
+  if game.field\cleared()
+    scene.endLevel(event)
   return true
 
 scene.createShot = (x, y, block) ->
@@ -69,7 +72,7 @@ scene.createShot = (x, y, block) ->
       x: (x - 0.5) * game.block_size + seed * coord[1],
       y: (y - 0.5) * game.block_size + seed * coord[2]
     })
-    transition.to(rect, { time: 20000, alpha: 0 })
+    transition.to(rect, { time: 5000, alpha: 0, transition: easing.inExpo })
     scene.shots_group\insert(rect)
 
 scene.updateTimerDisplay = (event) ->
@@ -115,10 +118,10 @@ scene.gameLoop = (event) ->
 
 scene.endLevel = (event) ->
   blocks_left = game.field\blocksLeft()
-  game.score -= math.floor(math.sqrt(blocks_left))
-  game.score += game.level
+  game.score_level_start = game.score
+  game.score -= blocks_left
   if game.time_remaining > event.time
-    game.score += (game.time_remaining + event.time) / 1000 * 20
+    game.score += (game.time_remaining - event.time) / 1000 * 20
   game.running_score = game.score
   Runtime\removeEventListener("enterFrame", gameLoop)
   scene.updateScoreDisplay()
@@ -133,21 +136,12 @@ scene.endLevel = (event) ->
   background\setFillColor(0,0,0,200)
   end_level_dialog\insert(background)
   y += game.block_size
-
+  
   score_text = "You scored " .. math.floor(game.score - game.score_level_start)
   score_text = display.newText(score_text, 0, y, native.systemFontBold, 16)
   score_text.x = x
   end_level_dialog\insert(score_text)
   y += score_text.height + game.block_size
-
-  if not game.player.name
-    -- ask for name
-    name_input = native.newTextField(display.contentHeight * 0.1, y, display.contentWidth * 0.7, game.block_size)
-    name_input.userInput = (event) ->
-      if event.text == ''
-        return
-    y += name_input.height + game.block_size
-    end_level_dialog\insert(name_input)
 
   game.highscores\insert({score: game.score - game.score_level_start, date: os.date('%F'), level: game.level})
 
@@ -225,7 +219,6 @@ scene.enterScene = (event) =>
   game.level += 1
   if @view.end_level_dialog
     @view.end_level_dialog\removeSelf()
-  game.reset()
   game.sounds.play('level_start')
   analytics.newEvent('design', {event_id: 'shootout:new', area: game.lvlString()})
   game.level_display.text = 'lvl ' .. game.level
