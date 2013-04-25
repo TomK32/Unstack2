@@ -15,6 +15,9 @@ scene.resetGun = () =>
       scene.shots_display.text = scene.gun.shots
   }
 
+scene.timeRemaining = (time) ->
+  -- 500ms for every shot
+  return time + 500 * scene.gun.shots
 
 rightAlignText = (text, x) ->
   text.x = x - text.width / 2 - game.block_size * 0.2
@@ -129,7 +132,7 @@ scene.gameLoop = (event) ->
   if not game.running
     return
   if not game.time_remaining
-    game.time_remaining = game.getTimeRemaining(event.time)
+    game.time_remaining = scene.timeRemaining(event.time)
   if game.score <= 0 or scene.gun.shots <= 0
     scene.endLevel(event)
     return true
@@ -141,7 +144,6 @@ scene.gameLoop = (event) ->
 
 scene.endLevel = (event) ->
   blocks_left = game.field\blocksLeft()
-  game.score_level_start = game.score
   game.score -= blocks_left
   if game.time_remaining > event.time
     game.score += (game.time_remaining - event.time) / 1000 * 20
@@ -241,8 +243,9 @@ scene.createScene = (event) =>
   @view
 
 scene.enterScene = (event) =>
-  game.reset()
   @resetGun()
+  game.score_level_start = game.score
+  game.reset()
   game.level += 1
   if @view.end_level_dialog
     @view.end_level_dialog\removeSelf()
