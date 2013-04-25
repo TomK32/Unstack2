@@ -26,7 +26,7 @@ export game = {
   block_size: block_size,
   level: 0,
   lvlString: ->
-    string.format('%.4f', game.level)
+    string.format('%4.i', game.level)
   score: 0,
   running_score: 0, -- to increase the score with some easing
   width: math.floor(display.contentWidth / block_size)
