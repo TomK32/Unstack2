@@ -55,16 +55,11 @@ export class Field extends Block
     return @shape[y][x]
 
   random: (group, level, height, width) ->
-    empty_tiles = math.min(math.max(level - 1, math.floor(level/(height + width))), (width + height) / 2)
     shape = {}
     for y=1, width do
       shape[y] = {}
       for x=1, height do
-        -- TODO: Use simplex noise
-        if empty_tiles > 0 and math.random() < 1/math.sqrt(x+x*y+level+empty_tiles+1)
-          empty_tiles -= 1
-        else
-          shape[y][x] = 1
+        shape[y][x] = 1
 
     return Field(shape, group, level)
 
@@ -72,7 +67,7 @@ export class Field extends Block
     blocks_left = 0
     for y, row in pairs(@shape)
       for x, b in pairs(row)
-        if b ~= nil and b ~= false
+        if b ~= nil and b ~= false and b.removed ~= true
           blocks_left += 1
     return blocks_left
 
