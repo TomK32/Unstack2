@@ -50,6 +50,13 @@ tapField = (event) ->
 
   game.sounds.play('explosion')
 
+  impact = 0.01 + math.random() / 80
+  _impact = 1 - impact * 2
+  transition.from(scene.field_group, {time: 100,
+    yScale: _impact, xScale: _impact,
+    x: scene.field_group.x + display.contentWidth * impact,
+    y: scene.field_group.y + display.contentHeight * impact})
+
   -- bonus multiplier
   if game.last_color_num and game.last_color_num == block.color_num
     game.color_bonus = (game.color_bonus or 1) + 1
