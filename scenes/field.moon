@@ -31,7 +31,6 @@ scene.createTarget = () ->
   game.last_target_time = os.time()
   timer.performWithDelay 1000, -> game.target_group\addEventListener("tap", scene.skipTarget )
 
-
 gestureShape = (event) ->
   if not game.running
     return
@@ -341,7 +340,6 @@ scene\addEventListener( "createScene", scene )
 scene\addEventListener( "enterScene", scene )
 scene\addEventListener( "exitScene", scene )
 --Runtime\addEventListener( "enterFrame", game.field.draw)
-
 
 return scene
 

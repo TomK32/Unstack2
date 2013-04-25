@@ -8,9 +8,13 @@ widget = require "widget"
 scene.resetGun = () =>
   @gun = {
     fire_frequence: 200,
-    shots: 50,
-    cost_per_shot: 3
+    shots: 10
+    score_per_hit: 3
+    changeShots: (diff) ->
+      scene.gun.shots += diff
+      scene.shots_display.text = scene.gun.shots
   }
+
 
 rightAlignText = (text, x) ->
   text.x = x - text.width / 2 - game.block_size * 0.2
@@ -26,8 +30,7 @@ tapField = (event) ->
 
   scene.last_shot = event.time
   game.sounds.play('shot')
-  game.score -= scene.gun.cost_per_shot
-  scene.gun.shots -= 1
+  scene.gun.changeShots(-1)
 
   x = event.x - game.field.group.x
   y = event.y - game.field.group.y
@@ -36,17 +39,37 @@ tapField = (event) ->
   block = game.field\get(block_x, block_y)
   if not block
     analytics.newEvent("design", {event_id: "shooting:failure", area: game.lvlString(), value: time_remaining})
+    game.color_bonus = nil -- different than the one in the field scene
+    game.last_color_num = nil
     return true
+  if block.removed -- hitting one block twice in a very very short time
+    return
 
   game.sounds.play('explosion')
 
+  -- bonus multiplier
+  if game.last_color_num and game.last_color_num == block.color_num
+    game.color_bonus = (game.color_bonus or 1) + 1
+    if game.color_bonus > 1
+      bonus_text = display.newText( game.color_bonus .. "x bonus", 0, game.block_size, native.systemFontBold, 16)
+      scene.view\insert(bonus_text)
+      rightAlignText(bonus_text, display.contentWidth)
+      transition.to(bonus_text, {alpha: 0, time: 1000, onComplete: => self\removeSelf()})
+  else
+    game.last_color_num = block.color_num
+    game.color_bonus = 1
+
+
+  game.score += scene.gun.score_per_hit * (game.color_bonus or 1)
   game.field\substractBlock(block_x, block_y)
-  analytics.newEvent("design", {event_id: "shooting:success", area: game.lvlString(), value: time_remaining})
   scene.createShot(block_x, block_y, block)
 
+  analytics.newEvent("design", {event_id: "shooting:success", area: game.lvlString(), value: time_remaining})
+
   -- make score big and grow back to normal size
-  game.score_display.size = game.block_size + (game.score - game.running_score)
-  transition.to(game.score_display, { size: game.block_size})
+  scene.score_display.size = game.block_size + (game.score - game.running_score)
+  transition.to(scene.score_display, { size: game.block_size})
+
 
   game.sounds.play('shot_success')
 
@@ -72,7 +95,7 @@ scene.createShot = (x, y, block) ->
       x: (x - 0.5) * game.block_size + seed * coord[1],
       y: (y - 0.5) * game.block_size + seed * coord[2]
     })
-    transition.to(rect, { time: 5000, alpha: 0, transition: easing.inExpo })
+    transition.to(rect, { time: 5000, alpha: 0, transition: easing.inQuad })
     scene.shots_group\insert(rect)
 
 scene.updateTimerDisplay = (event) ->
@@ -83,14 +106,14 @@ scene.updateTimerDisplay = (event) ->
     text = string.format("%.1f", (game.time_remaining - event.time) / 1000)
   else
     text = math.floor((game.time_remaining - event.time) / 1000)
-  game.timer_display.text = text
+  scene.timer_display.text = text
   if t < 0.5
     timer_color = {255, 255, 255, 255}
   else
     timer_color = {255, 150 * (2-2*t),  0,255}
-  game.timer_display\setTextColor(unpack(timer_color))
+  scene.timer_display\setTextColor(unpack(timer_color))
 
-  leftAlignText(game.timer_display, game.block_size * 4)
+  leftAlignText(scene.timer_display, game.block_size * 4)
 
 scene.updateScoreDisplay = (event) ->
   if game.running_score + 3 <= game.score
@@ -99,8 +122,8 @@ scene.updateScoreDisplay = (event) ->
     game.running_score += 1
   elseif game.running_score > game.score
     game.running_score = (game.score + game.running_score) / 2
-  game.score_display.text = math.floor(game.running_score)
-  leftAlignText(game.score_display, game.block_size * 4)
+  scene.score_display.text = math.floor(game.running_score)
+  leftAlignText(scene.score_display, game.block_size * 4)
 
 scene.gameLoop = (event) ->
   if not game.running
@@ -177,6 +200,7 @@ scene.endLevel = (event) ->
 
 -- Called when the scene's view does not exist:
 scene.createScene = (event) =>
+  @resetGun()
   -- view size will take full width but leave a few block on the top
   group = display.newGroup()
   @field_group = group
@@ -200,17 +224,20 @@ scene.createScene = (event) =>
   background = display.newRect(0, 0, game.block_size * 3, game.block_size * 3)
   background\setFillColor(0,0,0,1)
 
-  game.level_display = display.newText('lvl ' .. game.level, 0, game.block_size * 2, native.systemFontBold, game.block_size)
-  rightAlignText(game.level_display, display.contentWidth)
+  scene.level_display = display.newText('lvl ' .. game.level, 0, game.block_size * 2, native.systemFontBold, game.block_size)
+  rightAlignText(scene.level_display, display.contentWidth)
 
 
-  game.timer_display = display.newText(' ', 0, game.block_size * 2, native.systemFontBold, game.block_size)
+  scene.timer_display = display.newText(' ', 0, game.block_size * 2, native.systemFontBold, game.block_size)
 
-  game.score_display = display.newText(game.score, 0, game.block_size, native.systemFontBold, game.block_size)
+  scene.score_display = display.newText(game.score, 0, game.block_size, native.systemFontBold, game.block_size)
 
-  @view\insert(game.timer_display)
-  @view\insert(game.score_display)
-  @view\insert(game.level_display)
+  scene.shots_display = display.newText(scene.gun.shots, game.block_size, game.block_size, native.systemFontBold, game.block_size)
+
+  @view\insert(scene.timer_display)
+  @view\insert(scene.score_display)
+  @view\insert(scene.shots_display)
+  @view\insert(scene.level_display)
   @view
 
 scene.enterScene = (event) =>
@@ -221,7 +248,7 @@ scene.enterScene = (event) =>
     @view.end_level_dialog\removeSelf()
   game.sounds.play('level_start')
   analytics.newEvent('design', {event_id: 'shootout:new', area: game.lvlString()})
-  game.level_display.text = 'lvl ' .. game.level
+  scene.level_display.text = 'lvl ' .. game.level
 
   game.field = Field(game.field.shape, @field_group, game.level)
 
