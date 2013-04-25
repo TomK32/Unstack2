@@ -213,15 +213,6 @@ scene.endLevel = () ->
   end_level_dialog\insert(score_text)
   y += score_text.height + game.block_size
 
-  if false and not game.player.name
-    -- ask for name
-    name_input = native.newTextField(display.contentHeight * 0.1, y, display.contentWidth * 0.7, game.block_size)
-    name_input.userInput = (event) ->
-      if event.text == ''
-        return
-    y += name_input.height + game.block_size
-    end_level_dialog\insert(name_input)
-
   game.highscores\insert({score: game.score - game.score_level_start, date: os.date('%F'), level: game.level})
 
   next_button = widget.newButton({
@@ -262,6 +253,7 @@ scene.endLevel = () ->
   menu_button.x = x
   menu_button.y = y
 
+  background.height = background.y - menu_button.y + menu_button.height * 1.2
   end_level_dialog\insert(menu_button)
   scene.view.end_level_dialog = end_level_dialog
   scene.view\insert(end_level_dialog)
@@ -334,9 +326,11 @@ scene.enterScene = (event) =>
 
   scene.createTarget()
   timer.performWithDelay 1, -> Runtime\addEventListener("enterFrame", scene.gameLoop)
-  timer.performWithDelay 3000, scene.giveHint
+  scene.hint_timer = timer.performWithDelay 3000, scene.giveHint
+  true
 
 scene.exitScene = () =>
+  timer.cancel(scene.hint_timer)
   Runtime\removeEventListener("enterFrame", scene.gameLoop)
   if game.field
     game.field\removeSelf()
